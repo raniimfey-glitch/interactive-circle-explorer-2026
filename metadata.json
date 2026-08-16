@@ -1,0 +1,6 @@
+{
+  "name": "مستكشف الدائرة التفاعلي",
+  "description": "تطبيق تعليمي تفاعلي لتبسيط مفاهيم الدائرة (المركز، نصف القطر، القطر، الوتر) للسنتين الرابعة والخامسة ابتدائي وفق مناهج الجيل الثاني في الجزائر",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Tajawal', 'Cairo', system-ui, -apple-system, sans-serif;
+    background-color: #fffbeb; /* amber-50 */
+    color: #1e293b;
+    transition: font-size 0.2s ease;
+  }
+
+  h1, h2, h3, h4, h5, h6, .font-heading {
+    font-family: 'Cairo', 'Tajawal', system-ui, sans-serif;
+  }
+}
+
+/* Accessibility: Large text size mode */
+body.large-font-mode,
+.large-font-mode {
+  font-size: 1.125rem;
+}
+
+.large-font-mode p,
+.large-font-mode .font-medium,
+.large-font-mode .font-bold {
+  line-height: 1.7;
+}
+
+.large-font-mode .text-xs {
+  font-size: 0.925rem !important;
+  line-height: 1.5 !important;
+}
+
+.large-font-mode .text-sm {
+  font-size: 1.05rem !important;
+  line-height: 1.6 !important;
+}
+
+.large-font-mode .text-base {
+  font-size: 1.2rem !important;
+  line-height: 1.65 !important;
+}
+
+.large-font-mode .text-lg {
+  font-size: 1.35rem !important;
+}
+
+.large-font-mode .text-xl {
+  font-size: 1.55rem !important;
+}
+
+.large-font-mode .text-2xl {
+  font-size: 1.85rem !important;
+}
+
+.large-font-mode .text-\[10px\],
+.large-font-mode .text-\[11px\] {
+  font-size: 0.85rem !important;
+}
+
+/* Custom interactive pulse animations and geometry helper styles */
+@keyframes compassSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.compass-animation {
+  animation: compassSpin 4s linear infinite;
+}
+
+/* Custom scrollbar for friendly look */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #fef3c7;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #fbbf24;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #f59e0b;
+}
+
