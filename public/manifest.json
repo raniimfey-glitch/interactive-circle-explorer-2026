@@ -1,0 +1,110 @@
+{
+  "name": "مستكشف الدائرة التفاعلي",
+  "short_name": "مستكشف الدائرة",
+  "description": "تطبيق تعليمي تفاعلي لتبسيط مفاهيم الدائرة للسنتين الرابعة والخامسة ابتدائي - يعمل دون إنترنت",
+  "start_url": "/",
+  "scope": "/",
+  "id": "/",
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
+  "prefer_related_applications": false,
+  "orientation": "any",
+  "background_color": "#fffbeb",
+  "theme_color": "#059669",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": [
+    "education",
+    "math",
+    "kids"
+  ],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "64x64",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "السبورة التفاعلية",
+      "short_name": "السبورة",
+      "description": "استكشاف عناصر الدائرة: المركز ونصف القطر والقطر والوتر",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "ورشة الفرجار (المِدْوَر)",
+      "short_name": "الفرجار",
+      "description": "خطوات رسم الدائرة بالفرجار والمسطرة المدرجة",
+      "url": "/#compass",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "التحدي والاختبار التفاعلي",
+      "short_name": "الاختبار",
+      "description": "أسئلة وألغاز تفاعلية لاختبار فهم الدائرة",
+      "url": "/#quiz",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

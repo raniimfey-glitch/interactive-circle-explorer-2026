@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { CONCEPTS_DATA } from '../data/circleCurriculum';
-import { Volume2, Sparkles, HelpCircle, Check, ArrowRight, Calculator, CheckCircle2, ArrowLeftRight } from 'lucide-react';
-import { speakArabicText } from '../utils/speech';
+import { Volume2, Sparkles, HelpCircle, Check, ArrowRight, Calculator, CheckCircle2, ArrowLeftRight, Globe } from 'lucide-react';
+import { AppLanguage } from '../types';
+import { speakArabicText, speakEnglishText } from '../utils/speech';
 
 interface ConceptCardsProps {
   soundEnabled: boolean;
+  language?: AppLanguage;
 }
 
-export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled }) => {
+export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled, language = 'bilingual' }) => {
   const [selectedConceptId, setSelectedConceptId] = useState<string>('circle');
   const [calcMode, setCalcMode] = useState<'radius_to_diameter' | 'diameter_to_radius'>('radius_to_diameter');
   const [calcRadius, setCalcRadius] = useState<number>(3);
@@ -15,15 +17,27 @@ export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled }) => {
 
   const activeConcept = CONCEPTS_DATA.find((c) => c.id === selectedConceptId) || CONCEPTS_DATA[0];
 
-  const handleSpeak = (text: string) => {
+  const handleSpeakArabic = (text: string) => {
     speakArabicText(text);
   };
 
+  const handleSpeakEnglish = (text: string) => {
+    speakEnglishText(text);
+  };
+
   const handleSpeakCalc = () => {
-    if (calcMode === 'radius_to_diameter') {
-      speakArabicText(`نِصْفُ الْقُطْرِ يُسَاوِي ${calcRadius} سَنْتِمِتْراً، إِذَنْ طُولُ الْقُطْرِ هُوَ: ${calcRadius} زَائِد ${calcRadius} يُسَاوِي ${calcRadius * 2} سَنْتِمِتْراً.`);
+    if (language === 'en') {
+      if (calcMode === 'radius_to_diameter') {
+        speakEnglishText(`The radius is ${calcRadius} centimeters. Therefore, the diameter is: ${calcRadius} plus ${calcRadius} equals ${calcRadius * 2} centimeters.`);
+      } else {
+        speakEnglishText(`The diameter is ${calcDiameter} centimeters. Therefore, the radius is: ${calcDiameter} divided by 2 equals ${calcDiameter / 2} centimeters.`);
+      }
     } else {
-      speakArabicText(`طُولُ الْقُطْرِ يُسَاوِي ${calcDiameter} سَنْتِمِتْراً، إِذَنْ طُولُ نِصْفِ الْقُطْرِ هُوَ: ${calcDiameter} تَقْسِيم 2 يُسَاوِي ${calcDiameter / 2} سَنْتِمِتْراً.`);
+      if (calcMode === 'radius_to_diameter') {
+        speakArabicText(`نِصْفُ الْقُطْرِ يُسَاوِي ${calcRadius} سَنْتِمِتْراً، إِذَنْ طُولُ الْقُطْرِ هُوَ: ${calcRadius} زَائِد ${calcRadius} يُسَاوِي ${calcRadius * 2} سَنْتِمِتْراً.`);
+      } else {
+        speakArabicText(`طُولُ الْقُطْرِ يُسَاوِي ${calcDiameter} سَنْتِمِتْراً، إِذَنْ طُولُ نِصْفِ الْقُطْرِ هُوَ: ${calcDiameter} تَقْسِيم 2 يُسَاوِي ${calcDiameter / 2} سَنْتِمِتْراً.`);
+      }
     }
   };
 
@@ -36,20 +50,44 @@ export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled }) => {
             <Sparkles className="w-7 h-7 text-amber-300" />
           </div>
           <div>
-            <h2 className="font-black text-lg md:text-xl">دليل مفاهيم الدائرة المبسطة</h2>
+            <h2 className="font-black text-lg md:text-xl flex items-center gap-2">
+              <span>{language === 'en' ? 'Elementary Circle Concepts Guide' : 'دَلِيلُ مَفَاهِيمِ الدَّائِرَةِ الْمُبَسَّطَةِ'}</span>
+              {language === 'bilingual' && (
+                <span className="text-xs font-normal opacity-85 text-amber-200">| Circle Guide</span>
+              )}
+            </h2>
             <p className="text-xs md:text-sm text-teal-100 font-medium">
-              تعاريف واضحة وخالية من الرموز المعقدة لمساعدتك على التفوق في الرياضيات
+              {language === 'en' 
+                ? 'Clear, child-friendly definitions and interactive illustrations for 8-year-old pupils' 
+                : 'تَعَارِيفُ وَاضِحَةٌ وَخَالِيَةٌ مِنَ الرُّمُوزِ الْمُعَقَّدَةِ لِمُسَاعَدَتِكَ عَلَى التَّفَوُّقِ فِي الرِّيَاضِيَّاتِ'}
             </p>
           </div>
         </div>
 
-        <button
-          onClick={() => handleSpeak(`${activeConcept.title}. ${activeConcept.definition}`)}
-          className="self-start md:self-auto px-4 py-2 rounded-2xl bg-white/20 hover:bg-white/30 text-white text-xs font-black flex items-center gap-2 border border-white/30 transition-all shadow-xs"
-        >
-          <Volume2 className="w-4 h-4 text-amber-300" />
-          <span>استمع للمفهوم الحالي</span>
-        </button>
+        {/* Audio buttons */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {language !== 'en' && (
+            <button
+              onClick={() => handleSpeakArabic(`${activeConcept.title}. ${activeConcept.definition}`)}
+              className="px-3.5 py-2 rounded-2xl bg-white/20 hover:bg-white/30 text-white text-xs font-black flex items-center gap-1.5 border border-white/30 transition-all shadow-xs"
+              title="استمع إلى شرح المفهوم باللغة العربية"
+            >
+              <Volume2 className="w-4 h-4 text-amber-300" />
+              <span>قراءة عربية</span>
+            </button>
+          )}
+
+          {language !== 'ar' && (
+            <button
+              onClick={() => handleSpeakEnglish(`${activeConcept.titleEn || activeConcept.title}. ${activeConcept.definitionEn || activeConcept.definition}`)}
+              className="px-3.5 py-2 rounded-2xl bg-blue-500/30 hover:bg-blue-500/50 text-white text-xs font-black flex items-center gap-1.5 border border-blue-300/40 transition-all shadow-xs"
+              title="Listen in slow American English for 8-year-old children"
+            >
+              <span>🇺🇸</span>
+              <span>Listen (English)</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Concept Selector Tabs */}
@@ -59,15 +97,24 @@ export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled }) => {
             key={concept.id}
             onClick={() => {
               setSelectedConceptId(concept.id);
-              if (soundEnabled) speakArabicText(concept.title);
+              if (soundEnabled) {
+                if (language === 'en') {
+                  speakEnglishText(concept.titleEn || concept.title);
+                } else {
+                  speakArabicText(concept.title);
+                }
+              }
             }}
-            className={`px-4 py-3 rounded-2xl font-black text-xs sm:text-sm shrink-0 border transition-all flex items-center gap-2 ${
+            className={`px-4 py-3 rounded-2xl font-black text-xs sm:text-sm shrink-0 border transition-all flex flex-col items-center gap-0.5 ${
               selectedConceptId === concept.id
                 ? 'bg-gradient-to-r from-amber-500 to-amber-600 border-amber-400 text-slate-950 shadow-md shadow-amber-500/20 ring-4 ring-amber-300/40'
                 : 'bg-white/90 border-amber-200/80 text-slate-700 hover:bg-amber-100/50 hover:border-amber-300 shadow-xs'
             }`}
           >
-            <span>{concept.title}</span>
+            <span>{language === 'en' ? (concept.titleEn || concept.title) : concept.title}</span>
+            {language === 'bilingual' && concept.titleEn && (
+              <span className="text-[10px] opacity-80 font-normal">{concept.titleEn}</span>
+            )}
           </button>
         ))}
       </div>
@@ -77,9 +124,11 @@ export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled }) => {
         {/* Left: Illustrated Visual Card */}
         <div className="lg:col-span-5 bg-white/90 backdrop-blur-xs p-6 rounded-3xl border border-amber-200/80 shadow-md shadow-amber-500/5 flex flex-col items-center justify-center space-y-4">
           <div className="w-full flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500">الرسم التوضيحي المباشر:</span>
+            <span className="text-xs font-bold text-slate-500">
+              {language === 'en' ? 'Direct Visual Diagram:' : 'الرسم التوضيحي المباشر:'}
+            </span>
             <span className={`text-xs font-black px-3 py-1 rounded-full border shadow-2xs ${activeConcept.badgeColor}`}>
-              {activeConcept.subtitle}
+              {language === 'en' ? (activeConcept.subtitleEn || activeConcept.subtitle) : activeConcept.subtitle}
             </span>
           </div>
 
@@ -117,7 +166,7 @@ export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled }) => {
                     strokeDasharray="3 3"
                   />
                   <text x="150" y="102" textAnchor="middle" fill="#be123c" fontSize="13" fontWeight="black">
-                    المركز (نقطة الوسط)
+                    {language === 'en' ? 'Center Point' : 'المركز (نقطة الوسط)'}
                   </text>
                 </g>
               )}
@@ -128,7 +177,7 @@ export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled }) => {
                   <line x1="150" y1="130" x2="225" y2="90" stroke="#d97706" strokeWidth="4.5" strokeLinecap="round" />
                   <circle cx="225" cy="90" r="6" fill="#d97706" />
                   <text x="195" y="98" fill="#b45309" fontSize="12" fontWeight="black">
-                    نصف القطر
+                    {language === 'en' ? 'Radius' : 'نصف القطر'}
                   </text>
                 </g>
               )}
@@ -140,7 +189,7 @@ export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled }) => {
                   <circle cx="75" cy="170" r="6" fill="#1d4ed8" />
                   <circle cx="225" cy="90" r="6" fill="#1d4ed8" />
                   <text x="150" y="78" textAnchor="middle" fill="#1d4ed8" fontSize="13" fontWeight="black">
-                    القطر (يمر بالمركز)
+                    {language === 'en' ? 'Diameter' : 'القطر (يمر بالمركز)'}
                   </text>
                 </g>
               )}
@@ -152,7 +201,7 @@ export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled }) => {
                   <circle cx="75" cy="90" r="6" fill="#7e22ce" stroke="#ffffff" strokeWidth="1.5" />
                   <circle cx="190" cy="55" r="6" fill="#7e22ce" stroke="#ffffff" strokeWidth="1.5" />
                   <text x="135" y="65" textAnchor="middle" fill="#7e22ce" fontSize="13" fontWeight="black">
-                    الوتر (يصل بين نقطتين من المحيط)
+                    {language === 'en' ? 'Chord' : 'الوتر (يصل بين نقطتين من المحيط)'}
                   </text>
                 </g>
               )}
@@ -160,44 +209,91 @@ export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled }) => {
           </div>
 
           <div className="w-full text-center text-xs text-slate-500 font-bold">
-            شكل مبسط وواضح لتثبيت المفهوم في ذهن التلميذ
+            {language === 'en' 
+              ? 'Clear and simplified geometric diagram' 
+              : 'شكل مبسط وواضح لتثبيت المفهوم في ذهن التلميذ'}
           </div>
         </div>
 
         {/* Right: Detailed Definition & Takeaways */}
         <div className="lg:col-span-7 space-y-4">
           <div className="bg-white/90 backdrop-blur-xs p-6 rounded-3xl border border-amber-200/80 shadow-md shadow-amber-500/5 space-y-4">
-            <div className="flex items-center justify-between border-b border-amber-100 pb-3">
+            <div className="flex items-center justify-between border-b border-amber-100 pb-3 gap-2">
               <div>
-                <h3 className="text-xl font-black text-slate-900">{activeConcept.title}</h3>
-                <span className="text-xs text-slate-600 font-bold">{activeConcept.subtitle}</span>
+                <h3 className="text-xl font-black text-slate-900">
+                  {language === 'en' ? (activeConcept.titleEn || activeConcept.title) : activeConcept.title}
+                </h3>
+                <span className="text-xs text-slate-600 font-bold">
+                  {language === 'en' ? (activeConcept.subtitleEn || activeConcept.subtitle) : activeConcept.subtitle}
+                </span>
+                {language === 'bilingual' && activeConcept.titleEn && (
+                  <div className="text-xs text-blue-700 font-semibold mt-0.5">
+                    🇺🇸 {activeConcept.titleEn} — {activeConcept.subtitleEn}
+                  </div>
+                )}
               </div>
-              <button
-                onClick={() => handleSpeak(activeConcept.definition)}
-                className="p-2.5 rounded-2xl bg-amber-100/70 hover:bg-amber-200/80 text-amber-950 border border-amber-200 transition-colors flex items-center gap-1.5 text-xs font-black shadow-2xs"
-              >
-                <Volume2 className="w-4 h-4 text-emerald-600" />
-                <span>قراءة التعريف</span>
-              </button>
+
+              {/* Audio reading controls */}
+              <div className="flex items-center gap-1.5 shrink-0">
+                {language !== 'en' && (
+                  <button
+                    onClick={() => handleSpeakArabic(activeConcept.definition)}
+                    className="p-2 sm:px-3 sm:py-2 rounded-2xl bg-amber-100/70 hover:bg-amber-200/80 text-amber-950 border border-amber-200 transition-colors flex items-center gap-1 text-xs font-black shadow-2xs"
+                    title="قراءة التعريف بالعربية المشكولة"
+                  >
+                    <Volume2 className="w-4 h-4 text-emerald-600" />
+                    <span className="hidden sm:inline">عربي</span>
+                  </button>
+                )}
+
+                {language !== 'ar' && (
+                  <button
+                    onClick={() => handleSpeakEnglish(activeConcept.definitionEn || activeConcept.definition)}
+                    className="p-2 sm:px-3 sm:py-2 rounded-2xl bg-blue-100/80 hover:bg-blue-200 text-blue-950 border border-blue-300 transition-colors flex items-center gap-1 text-xs font-black shadow-2xs"
+                    title="Listen to definition in slow American English"
+                  >
+                    <span>🇺🇸</span>
+                    <span className="hidden sm:inline">English</span>
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Main definition paragraph */}
-            <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80">
-              <p className="text-sm md:text-base font-black text-slate-900 leading-relaxed">
-                {activeConcept.definition}
-              </p>
+            <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-2">
+              {language !== 'en' && (
+                <p className="text-sm md:text-base font-black text-slate-900 leading-relaxed">
+                  {activeConcept.definition}
+                </p>
+              )}
+
+              {(language === 'en' || language === 'bilingual') && activeConcept.definitionEn && (
+                <p className={`text-xs md:text-sm font-semibold text-slate-700 leading-relaxed ${language === 'bilingual' ? 'pt-2 border-t border-amber-200/60' : ''}`}>
+                  {language === 'bilingual' && <span className="font-bold text-blue-700">🇺🇸 English: </span>}
+                  {activeConcept.definitionEn}
+                </p>
+              )}
             </div>
 
             {/* Key takeaways */}
             <div className="space-y-2">
-              <h4 className="text-xs font-black text-slate-800">النقاط المهمة التي يجب حفظها:</h4>
+              <h4 className="text-xs font-black text-slate-800">
+                {language === 'en' ? 'Important Key Points to Remember:' : 'النقاط المهمة التي يجب حفظها:'}
+              </h4>
               <div className="space-y-2">
                 {activeConcept.keyPoints.map((pt, idx) => (
                   <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-slate-700">
                     <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 font-black flex items-center justify-center shrink-0 text-xs border border-emerald-300">
                       ✓
                     </span>
-                    <span>{pt}</span>
+                    <div className="space-y-0.5">
+                      {language !== 'en' && <span>{pt}</span>}
+                      {(language === 'en' || language === 'bilingual') && activeConcept.keyPointsEn?.[idx] && (
+                        <div className={`text-xs text-slate-600 ${language === 'bilingual' ? 'italic' : ''}`}>
+                          {activeConcept.keyPointsEn[idx]}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -206,9 +302,16 @@ export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled }) => {
             {/* Fun Real-life Fact */}
             <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-100/70 to-orange-100/50 border border-amber-300 text-amber-950 text-xs sm:text-sm flex items-start gap-2.5 shadow-2xs">
               <Sparkles className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-              <div>
-                <strong className="font-black block mb-1 text-amber-950">فائدة ذكية من الحياة اليومية:</strong>
-                <span className="text-slate-800 font-medium">{activeConcept.funFact}</span>
+              <div className="space-y-1">
+                <strong className="font-black block text-amber-950">
+                  {language === 'en' ? 'Smart Everyday Life Fact:' : 'فائدة ذكية من الحياة اليومية:'}
+                </strong>
+                {language !== 'en' && <p className="text-slate-800 font-medium">{activeConcept.funFact}</p>}
+                {(language === 'en' || language === 'bilingual') && activeConcept.funFactEn && (
+                  <p className={`text-xs text-slate-700 font-medium ${language === 'bilingual' ? 'pt-1 border-t border-amber-200/60' : ''}`}>
+                    {activeConcept.funFactEn}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -218,7 +321,11 @@ export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled }) => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-100 pb-3">
               <h4 className="text-xs sm:text-sm font-black text-slate-900 flex items-center gap-2">
                 <Calculator className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>حَاسِبَةُ الْعَلَاقَةِ بَيْنَ نِصْفِ الْقُطْرِ وَالْقُطْرِ:</span>
+                <span>
+                  {language === 'en' 
+                    ? 'Radius & Diameter Relationship Calculator:' 
+                    : 'حَاسِبَةُ الْعَلَاقَةِ بَيْنَ نِصْفِ الْقُطْرِ وَالْقُطْرِ:'}
+                </span>
               </h4>
               
               <button
@@ -228,7 +335,7 @@ export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled }) => {
                 title="اِسْتَمِعْ لِلْعَمَلِيَّةِ الْحِسَابِيَّةِ بِصَوْتٍ وَاضِحٍ"
               >
                 <Volume2 className="w-3.5 h-3.5 text-emerald-600" />
-                <span>اِسْتَمِعْ لِلْعَمَلِيَّةِ</span>
+                <span>{language === 'en' ? 'Listen to calculation' : 'اِسْتَمِعْ لِلْعَمَلِيَّةِ'}</span>
               </button>
             </div>
 
@@ -238,7 +345,13 @@ export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled }) => {
                 id="calc-mode-radius-btn"
                 onClick={() => {
                   setCalcMode('radius_to_diameter');
-                  if (soundEnabled) speakArabicText('حِسَابُ الْقُطْرِ انْطِلَاقاً مِنْ نِصْفِ الْقُطْرِ');
+                  if (soundEnabled) {
+                    if (language === 'en') {
+                      speakEnglishText('Calculate diameter from radius');
+                    } else {
+                      speakArabicText('حِسَابُ الْقُطْرِ انْطِلَاقاً مِنْ نِصْفِ الْقُطْرِ');
+                    }
+                  }
                 }}
                 className={`py-2 px-3 rounded-2xl text-xs font-black border transition-all flex items-center justify-center gap-1.5 ${
                   calcMode === 'radius_to_diameter'
@@ -246,14 +359,20 @@ export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled }) => {
                     : 'bg-amber-50/50 border-amber-200/70 text-slate-700 hover:bg-amber-100/50'
                 }`}
               >
-                <span>حِسَابُ الْقُطْرِ (مَعْرِفَةُ نِصْفِ الْقُطْرِ)</span>
+                <span>{language === 'en' ? 'Calculate Diameter (from Radius)' : 'حِسَابُ الْقُطْرِ (مَعْرِفَةُ نِصْفِ الْقُطْرِ)'}</span>
               </button>
 
               <button
                 id="calc-mode-diameter-btn"
                 onClick={() => {
                   setCalcMode('diameter_to_radius');
-                  if (soundEnabled) speakArabicText('حِسَابُ نِصْفِ الْقُطْرِ انْطِلَاقاً مِنَ الْقُطْرِ');
+                  if (soundEnabled) {
+                    if (language === 'en') {
+                      speakEnglishText('Calculate radius from diameter');
+                    } else {
+                      speakArabicText('حِسَابُ نِصْفِ الْقُطْرِ انْطِلَاقاً مِنَ الْقُطْرِ');
+                    }
+                  }
                 }}
                 className={`py-2 px-3 rounded-2xl text-xs font-black border transition-all flex items-center justify-center gap-1.5 ${
                   calcMode === 'diameter_to_radius'
@@ -261,7 +380,7 @@ export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled }) => {
                     : 'bg-amber-50/50 border-amber-200/70 text-slate-700 hover:bg-amber-100/50'
                 }`}
               >
-                <span>حِسَابُ نِصْفِ الْقُطْرِ (مَعْرِفَةُ الْقُطْرِ)</span>
+                <span>{language === 'en' ? 'Calculate Radius (from Diameter)' : 'حِسَابُ نِصْفِ الْقُطْرِ (مَعْرِفَةُ الْقُطْرِ)'}</span>
               </button>
             </div>
 
@@ -270,7 +389,7 @@ export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled }) => {
               <div className="space-y-3 bg-emerald-50/40 p-4 rounded-2xl border border-emerald-200/70">
                 <div className="space-y-2">
                   <label className="text-xs font-black text-slate-800 block">
-                    اِخْتَرْ طُولَ نِصْفِ الْقُطْرِ:
+                    {language === 'en' ? 'Choose radius length:' : 'اِخْتَرْ طُولَ نِصْفِ الْقُطْرِ:'}
                   </label>
                   <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
                     {[1, 2, 3, 4, 5, 6].map((num) => (
@@ -279,7 +398,11 @@ export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled }) => {
                         onClick={() => {
                           setCalcRadius(num);
                           if (soundEnabled) {
-                            speakArabicText(`نِصْفُ الْقُطْرِ يُسَاوِي ${num} سَنْتِمِتْراً، إِذَنْ طُولُ الْقُطْرِ هُوَ: ${num} زَائِد ${num} يُسَاوِي ${num * 2} سَنْتِمِتْراً.`);
+                            if (language === 'en') {
+                              speakEnglishText(`Radius is ${num} cm. Diameter is: ${num} + ${num} = ${num * 2} cm.`);
+                            } else {
+                              speakArabicText(`نِصْفُ الْقُطْرِ يُسَاوِي ${num} سَنْتِمِتْراً، إِذَنْ طُولُ الْقُطْرِ هُوَ: ${num} زَائِد ${num} يُسَاوِي ${num * 2} سَنْتِمِتْراً.`);
+                            }
                           }
                         }}
                         className={`py-2 px-2 rounded-xl text-xs font-black transition-all border ${
@@ -288,22 +411,26 @@ export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled }) => {
                             : 'bg-white border-emerald-200/80 text-emerald-950 hover:bg-emerald-100/50'
                         }`}
                       >
-                        {num} سَنْتِمِتْراً
+                        {num} {language === 'en' ? 'cm' : 'سَنْتِمِتْراً'}
                       </button>
                     ))}
                   </div>
                 </div>
 
                 <div className="bg-white p-4 rounded-2xl border border-emerald-300 text-center space-y-1.5 shadow-xs">
-                  <div className="text-xs font-black text-slate-600">طُولُ الْقُطْرِ الْمَحْسُوبِ:</div>
+                  <div className="text-xs font-black text-slate-600">
+                    {language === 'en' ? 'Calculated Diameter:' : 'طُولُ الْقُطْرِ الْمَحْسُوبِ:'}
+                  </div>
                   <div className="text-2xl font-black text-emerald-700">
-                    {calcRadius * 2} سَنْتِمِتْراً
+                    {calcRadius * 2} {language === 'en' ? 'cm' : 'سَنْتِمِتْراً'}
                   </div>
                   <div className="text-xs text-slate-700 font-bold bg-emerald-50 py-1 px-3 rounded-lg inline-block border border-emerald-200">
-                    الْعَمَلِيَّةُ: {calcRadius} + {calcRadius} = {calcRadius * 2} سَنْتِمِتْراً ({calcRadius} × 2 = {calcRadius * 2} سَنْتِمِتْراً)
+                    {language === 'en' 
+                      ? `Formula: ${calcRadius} + ${calcRadius} = ${calcRadius * 2} cm (${calcRadius} × 2 = ${calcRadius * 2} cm)`
+                      : `الْعَمَلِيَّةُ: ${calcRadius} + ${calcRadius} = ${calcRadius * 2} سَنْتِمِتْراً (${calcRadius} × 2 = ${calcRadius * 2} سَنْتِمِتْراً)`}
                   </div>
                   <div className="text-[11px] text-emerald-900 font-medium">
-                    الْقَاعِدَةُ: طُولُ الْقُطْرِ = نِصْفُ الْقُطْرِ + نِصْفُ الْقُطْرِ
+                    {language === 'en' ? 'Rule: Diameter = Radius + Radius (or Radius × 2)' : 'الْقَاعِدَةُ: طُولُ الْقُطْرِ = نِصْفُ الْقُطْرِ + نِصْفُ الْقُطْرِ'}
                   </div>
                 </div>
               </div>
@@ -311,7 +438,7 @@ export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled }) => {
               <div className="space-y-3 bg-blue-50/40 p-4 rounded-2xl border border-blue-200/70">
                 <div className="space-y-2">
                   <label className="text-xs font-black text-slate-800 block">
-                    اِخْتَرْ طُولَ الْقُطْرِ:
+                    {language === 'en' ? 'Choose diameter length:' : 'اِخْتَرْ طُولَ الْقُطْرِ:'}
                   </label>
                   <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
                     {[2, 4, 6, 8, 10, 12].map((num) => (
@@ -320,7 +447,11 @@ export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled }) => {
                         onClick={() => {
                           setCalcDiameter(num);
                           if (soundEnabled) {
-                            speakArabicText(`طُولُ الْقُطْرِ يُسَاوِي ${num} سَنْتِمِتْراً، إِذَنْ طُولُ نِصْفِ الْقُطْرِ هُوَ: ${num} تَقْسِيم 2 يُسَاوِي ${num / 2} سَنْتِمِتْراً.`);
+                            if (language === 'en') {
+                              speakEnglishText(`Diameter is ${num} cm. Radius is: ${num} / 2 = ${num / 2} cm.`);
+                            } else {
+                              speakArabicText(`طُولُ الْقُطْرِ يُسَاوِي ${num} سَنْتِمِتْراً، إِذَنْ طُولُ نِصْفِ الْقُطْرِ هُوَ: ${num} تَقْسِيم 2 يُسَاوِي ${num / 2} سَنْتِمِتْراً.`);
+                            }
                           }
                         }}
                         className={`py-2 px-2 rounded-xl text-xs font-black transition-all border ${
@@ -329,22 +460,26 @@ export const ConceptCards: React.FC<ConceptCardsProps> = ({ soundEnabled }) => {
                             : 'bg-white border-blue-200/80 text-blue-950 hover:bg-blue-100/50'
                         }`}
                       >
-                        {num} سَنْتِمِتْراً
+                        {num} {language === 'en' ? 'cm' : 'سَنْتِمِتْراً'}
                       </button>
                     ))}
                   </div>
                 </div>
 
                 <div className="bg-white p-4 rounded-2xl border border-blue-300 text-center space-y-1.5 shadow-xs">
-                  <div className="text-xs font-black text-slate-600">طُولُ نِصْفِ الْقُطْرِ الْمَحْسُوبِ:</div>
+                  <div className="text-xs font-black text-slate-600">
+                    {language === 'en' ? 'Calculated Radius:' : 'طُولُ نِصْفِ الْقُطْرِ الْمَحْسُوبِ:'}
+                  </div>
                   <div className="text-2xl font-black text-blue-700">
-                    {calcDiameter / 2} سَنْتِمِتْراً
+                    {calcDiameter / 2} {language === 'en' ? 'cm' : 'سَنْتِمِتْراً'}
                   </div>
                   <div className="text-xs text-slate-700 font-bold bg-blue-50 py-1 px-3 rounded-lg inline-block border border-blue-200">
-                    الْعَمَلِيَّةُ: {calcDiameter} ÷ 2 = {calcDiameter / 2} سَنْتِمِتْراً
+                    {language === 'en' 
+                      ? `Formula: ${calcDiameter} ÷ 2 = ${calcDiameter / 2} cm`
+                      : `الْعَمَلِيَّةُ: ${calcDiameter} ÷ 2 = ${calcDiameter / 2} سَنْتِمِتْراً`}
                   </div>
                   <div className="text-[11px] text-blue-900 font-medium">
-                    الْقَاعِدَةُ: طُولُ نِصْفِ الْقُطْرِ = الْقُطْرُ ÷ 2
+                    {language === 'en' ? 'Rule: Radius = Diameter ÷ 2' : 'الْقَاعِدَةُ: طُولُ نِصْفِ الْقُطْرِ = الْقُطْرُ ÷ 2'}
                   </div>
                 </div>
               </div>

@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import { EVERYDAY_ITEMS } from '../data/circleCurriculum';
-import { Bike, Clock, Coins, Disc, Sparkles, Volume2, CheckCircle2 } from 'lucide-react';
-import { speakArabicText } from '../utils/speech';
+import { Bike, Clock, Coins, Disc, Sparkles, Volume2, CheckCircle2, Globe } from 'lucide-react';
+import { AppLanguage } from '../types';
+import { speakArabicText, speakEnglishText } from '../utils/speech';
 
 interface EverydayCircleGalleryProps {
   soundEnabled: boolean;
+  language?: AppLanguage;
 }
 
-export const EverydayCircleGallery: React.FC<EverydayCircleGalleryProps> = ({ soundEnabled }) => {
+export const EverydayCircleGallery: React.FC<EverydayCircleGalleryProps> = ({ 
+  soundEnabled,
+  language = 'bilingual'
+}) => {
   const [selectedItemId, setSelectedItemId] = useState<string>('bike-wheel');
   const [highlightRole, setHighlightRole] = useState<'all' | 'center' | 'radius' | 'circle'>('all');
 
@@ -28,8 +33,12 @@ export const EverydayCircleGallery: React.FC<EverydayCircleGalleryProps> = ({ so
     }
   };
 
-  const handleSpeak = (text: string) => {
+  const handleSpeakArabic = (text: string) => {
     speakArabicText(text);
+  };
+
+  const handleSpeakEnglish = (text: string) => {
+    speakEnglishText(text);
   };
 
   return (
@@ -41,9 +50,13 @@ export const EverydayCircleGallery: React.FC<EverydayCircleGalleryProps> = ({ so
             <Sparkles className="w-7 h-7 text-amber-300" />
           </div>
           <div>
-            <h2 className="font-black text-lg md:text-xl">الدائرة في حياتنا اليومية والبيئة المحيطة</h2>
+            <h2 className="font-black text-lg md:text-xl">
+              {language === 'en' ? 'Circles in Our Everyday Life & Environment' : 'الدَّائِرَةُ فِي حَيَاتِنَا الْيَوْمِيَّةِ وَالْبِيئَةِ الْمُحِيطَةِ'}
+            </h2>
             <p className="text-xs md:text-sm text-teal-100 font-medium">
-              اكتشف كيف أن الرياضيات والهندسة موجودة في كل الأشياء الجميلة من حولك
+              {language === 'en'
+                ? 'Discover how geometry and mathematics shape beautiful circular objects all around us'
+                : 'اِكْتَشِفْ كَيْفَ أَنَّ الرِّيَاضِيَّاتِ وَالْهَنْدَسَةَ مَوْجُودَةٌ فِي كُلِّ الْأَشْيَاءِ الْجَمِيلَةِ مِنْ حَوْلِكَ'}
             </p>
           </div>
         </div>
@@ -263,27 +276,62 @@ export const EverydayCircleGallery: React.FC<EverydayCircleGalleryProps> = ({ so
         {/* Right: Explanations breakdown */}
         <div className="lg:col-span-6 space-y-4">
           <div className="bg-white/90 backdrop-blur-xs p-6 rounded-3xl border border-amber-200/80 shadow-md shadow-amber-500/5 space-y-4">
-            <div className="flex items-center justify-between border-b border-amber-100 pb-3">
+            <div className="flex items-center justify-between border-b border-amber-100 pb-3 flex-wrap gap-2">
               <div>
-                <h3 className="text-lg font-black text-slate-900">{activeItem.title}</h3>
+                <h3 className="text-lg font-black text-slate-900">
+                  {language === 'en' ? activeItem.titleEn : activeItem.title}
+                </h3>
+                {language === 'bilingual' && activeItem.titleEn && (
+                  <span className="text-xs text-blue-800 font-bold block">🇺🇸 {activeItem.titleEn}</span>
+                )}
                 <span className="text-xs text-slate-600 font-bold">{activeItem.category}</span>
               </div>
-              <button
-                onClick={() =>
-                  handleSpeak(
-                    `${activeItem.title}. ${activeItem.description} ${activeItem.circleRole} ${activeItem.centerRole} ${activeItem.radiusRole}`
-                  )
-                }
-                className="p-2.5 rounded-2xl bg-amber-100/70 hover:bg-amber-200/80 text-amber-950 border border-amber-200 transition-colors flex items-center gap-1.5 text-xs font-black shadow-2xs"
-              >
-                <Volume2 className="w-4 h-4 text-emerald-600" />
-                <span>استمع للشرح</span>
-              </button>
+
+              <div className="flex items-center gap-1.5">
+                {language !== 'en' && (
+                  <button
+                    onClick={() =>
+                      handleSpeakArabic(
+                        `${activeItem.title}. ${activeItem.description} ${activeItem.circleRole} ${activeItem.centerRole} ${activeItem.radiusRole}`
+                      )
+                    }
+                    className="p-2.5 rounded-2xl bg-amber-100/70 hover:bg-amber-200/80 text-amber-950 border border-amber-200 transition-colors flex items-center gap-1.5 text-xs font-black shadow-2xs"
+                    title="استمع بالعربية المشكولة"
+                  >
+                    <Volume2 className="w-4 h-4 text-emerald-600" />
+                    <span>عربي</span>
+                  </button>
+                )}
+
+                {language !== 'ar' && (
+                  <button
+                    onClick={() =>
+                      handleSpeakEnglish(
+                        `${activeItem.titleEn}. ${activeItem.descriptionEn || activeItem.description}. ${activeItem.circleRoleEn || activeItem.circleRole} ${activeItem.centerRoleEn || activeItem.centerRole} ${activeItem.radiusRoleEn || activeItem.radiusRole}`
+                      )
+                    }
+                    className="p-2.5 rounded-2xl bg-blue-100/80 hover:bg-blue-200 text-blue-950 border border-blue-300 transition-colors flex items-center gap-1.5 text-xs font-black shadow-2xs"
+                    title="Listen in slow American English"
+                  >
+                    <span>🇺🇸</span>
+                    <span>English</span>
+                  </button>
+                )}
+              </div>
             </div>
 
-            <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
-              {activeItem.description}
-            </p>
+            {language !== 'en' && (
+              <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
+                {activeItem.description}
+              </p>
+            )}
+
+            {(language === 'en' || language === 'bilingual') && activeItem.descriptionEn && (
+              <p className={`text-xs sm:text-sm text-slate-800 font-medium leading-relaxed ${language === 'bilingual' ? 'pt-2 border-t border-amber-100 text-blue-950' : ''}`}>
+                {language === 'bilingual' && <strong className="text-blue-800">🇺🇸 English: </strong>}
+                {activeItem.descriptionEn}
+              </p>
+            )}
 
             {/* Elements matching table */}
             <div className="space-y-2.5 pt-2">
@@ -291,8 +339,15 @@ export const EverydayCircleGallery: React.FC<EverydayCircleGalleryProps> = ({ so
               <div className="p-3.5 rounded-2xl bg-emerald-50/80 border border-emerald-200 flex items-start gap-3 shadow-2xs">
                 <span className="w-3.5 h-3.5 rounded-full bg-emerald-500 shrink-0 mt-1"></span>
                 <div>
-                  <strong className="text-xs font-black text-emerald-950 block">الدائرة (أو القرص):</strong>
-                  <span className="text-xs text-slate-700 font-medium">{activeItem.circleRole}</span>
+                  <strong className="text-xs font-black text-emerald-950 block">
+                    {language === 'en' ? 'Circle (or Disc):' : 'الدائرة (أو القرص):'}
+                  </strong>
+                  {language !== 'en' && <span className="text-xs text-slate-700 font-medium">{activeItem.circleRole}</span>}
+                  {(language === 'en' || language === 'bilingual') && activeItem.circleRoleEn && (
+                    <span className={`text-xs text-emerald-900 font-medium ${language === 'bilingual' ? 'block mt-0.5 text-emerald-800 font-semibold' : ''}`}>
+                      {language === 'bilingual' ? `🇺🇸 ${activeItem.circleRoleEn}` : activeItem.circleRoleEn}
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -300,8 +355,15 @@ export const EverydayCircleGallery: React.FC<EverydayCircleGalleryProps> = ({ so
               <div className="p-3.5 rounded-2xl bg-rose-50/80 border border-rose-200 flex items-start gap-3 shadow-2xs">
                 <span className="w-3.5 h-3.5 rounded-full bg-rose-500 shrink-0 mt-1"></span>
                 <div>
-                  <strong className="text-xs font-black text-rose-950 block">المركز:</strong>
-                  <span className="text-xs text-slate-700 font-medium">{activeItem.centerRole}</span>
+                  <strong className="text-xs font-black text-rose-950 block">
+                    {language === 'en' ? 'Center:' : 'المركز:'}
+                  </strong>
+                  {language !== 'en' && <span className="text-xs text-slate-700 font-medium">{activeItem.centerRole}</span>}
+                  {(language === 'en' || language === 'bilingual') && activeItem.centerRoleEn && (
+                    <span className={`text-xs text-rose-900 font-medium ${language === 'bilingual' ? 'block mt-0.5 text-rose-800 font-semibold' : ''}`}>
+                      {language === 'bilingual' ? `🇺🇸 ${activeItem.centerRoleEn}` : activeItem.centerRoleEn}
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -309,8 +371,15 @@ export const EverydayCircleGallery: React.FC<EverydayCircleGalleryProps> = ({ so
               <div className="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200 flex items-start gap-3 shadow-2xs">
                 <span className="w-3.5 h-3.5 rounded-full bg-amber-500 shrink-0 mt-1"></span>
                 <div>
-                  <strong className="text-xs font-black text-amber-950 block">نصف القطر:</strong>
-                  <span className="text-xs text-slate-700 font-medium">{activeItem.radiusRole}</span>
+                  <strong className="text-xs font-black text-amber-950 block">
+                    {language === 'en' ? 'Radius:' : 'نصف القطر:'}
+                  </strong>
+                  {language !== 'en' && <span className="text-xs text-slate-700 font-medium">{activeItem.radiusRole}</span>}
+                  {(language === 'en' || language === 'bilingual') && activeItem.radiusRoleEn && (
+                    <span className={`text-xs text-amber-900 font-medium ${language === 'bilingual' ? 'block mt-0.5 text-amber-800 font-semibold' : ''}`}>
+                      {language === 'bilingual' ? `🇺🇸 ${activeItem.radiusRoleEn}` : activeItem.radiusRoleEn}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>

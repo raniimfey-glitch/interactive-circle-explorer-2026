@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Compass, Play, RotateCcw, CheckCircle2, Ruler, Pencil, Sparkles, Volume2 } from 'lucide-react';
-import { speakArabicText } from '../utils/speech';
+import { Compass, Play, RotateCcw, CheckCircle2, Ruler, Pencil, Sparkles, Volume2, Globe } from 'lucide-react';
+import { AppLanguage } from '../types';
+import { speakArabicText, speakEnglishText } from '../utils/speech';
 
 interface CompassWorkshopProps {
   soundEnabled: boolean;
+  language?: AppLanguage;
 }
 
-export const CompassWorkshop: React.FC<CompassWorkshopProps> = ({ soundEnabled }) => {
+export const CompassWorkshop: React.FC<CompassWorkshopProps> = ({ 
+  soundEnabled,
+  language = 'bilingual'
+}) => {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [radiusChoice, setRadiusChoice] = useState<number>(3.5); // cm
   const [drawProgress, setDrawProgress] = useState<number>(0); // 0 to 360 deg
@@ -20,27 +25,39 @@ export const CompassWorkshop: React.FC<CompassWorkshopProps> = ({ soundEnabled }
   const stepsData = [
     {
       num: 1,
-      title: 'تحديد المركز على الورقة',
-      desc: 'نضع نقطة واضحة في المكان المناسب ونسميها "المركز". هذه النقطة سنثبت عليها إبرة الفرجار.',
-      sound: 'الخطوة الأولى: نحدد نقطة المركز على الكراس بوضع علامة صغيرة بالقلم.'
+      title: 'تَحْدِيدُ الْمَرْكَزِ عَلَى الْوَرَقَةِ',
+      titleEn: 'Marking the Center Point',
+      desc: 'نَضَعُ نُقْطَةً وَاضِحَةً فِي الْمَكَانِ الْمُنَاسِبِ وَنُسَمِّيهَا "الْمَرْكَزَ". هَذِهِ النُّقْطَةُ سَنُثَبِّتُ عَلَيْهَا إِبْرَةَ الْفِرْجَارِ.',
+      descEn: 'Place a clear dot on the notebook paper and call it the center. We will anchor the compass needle here.',
+      sound: 'الْخَطْوَةُ الْأُولَى: نُحَدِّدُ نُقْطَةَ الْمَرْكَزِ عَلَى الْكُرَّاسِ بِوَضْعِ عَلَامَةٍ صَغِيرَةٍ بِالْقَلَمِ.',
+      soundEn: 'Step 1: Mark the center point on the notebook paper with a small pencil dot.'
     },
     {
       num: 2,
-      title: 'ضبط فتحة الفرجار بالمسطرة',
-      desc: `نضع إبرة الفرجار عند الصفر على المسطرة المدرجة، ونفتح الساق الأخرى حتى تصل إلى قياس نصف القطر (${radiusChoice} سم).`,
-      sound: `الخطوة الثانية: نفتح ساقي الفرجار بالمسطرة المدرجة بمقدار نصف القطر، وهو ${radiusChoice} سنتيمتر.`
+      title: 'ضَبْطُ فَتْحَةِ الْفِرْجَارِ بِالْمِسْطَرَةِ',
+      titleEn: 'Setting Compass Radius with Ruler',
+      desc: `نَضَعُ إِبْرَةَ الْفِرْجَارِ عِنْدَ الصِّفْرِ عَلَى الْمِسْطَرَةِ الْمُدَرَّجَةِ، وَنَفْتَحُ السَّاقَ الْأُخْرَى حَتَّى تَصِلَ إِلَى قِيَاسِ نِصْفِ الْقُطْرِ (${radiusChoice} سَم).`,
+      descEn: `Place the compass needle at zero on the ruler, and open the pencil arm to match the radius (${radiusChoice} cm).`,
+      sound: `الْخَطْوَةُ الثَّانِيَةُ: نَفْتَحُ سَاقَيِ الْفِرْجَارِ بِالْمِسْطَرَةِ الْمُدَرَّجَةِ بِمِقْدَارِ نِصْفِ الْقُطْرِ، وَهُوَ ${radiusChoice} سَنْتِيمِتْراً.`,
+      soundEn: `Step 2: Open the compass arms using the graduated ruler to the radius of ${radiusChoice} centimeters.`
     },
     {
       num: 3,
-      title: 'تثبيت الإبرة في المركز والتدوير',
-      desc: 'نغرس إبرة الفرجار في نقطة المركز بإحكام، ونمسك الفرجار من المقبض العلوي ونديره بلطف لرسم المحيط.',
-      sound: 'الخطوة الثالثة: نثبت إبرة الفرجار في المركز وندير القلم لرسم الدائرة كاملة.'
+      title: 'تَثْبِيتُ الْإِبْرَةِ فِي الْمَرْكَزِ وَالتَّدْوِيرُ',
+      titleEn: 'Planting Needle and Rotating Compass',
+      desc: 'نَغْرِسُ إِبْرَةَ الْفِرْجَارِ فِي نُقْطَةِ الْمَرْكَزِ بِإِحْكَامٍ، وَنُمْسِكُ الْفِرْجَارَ مِنَ الْمَقْبَضِ الْعُلْوِيِّ وَنُدِيرُهُ بِلُطْفٍ لِرَسْمِ الْمُحِيطِ.',
+      descEn: 'Press the compass needle firmly into the center point, hold the top handle, and gently rotate to draw the circle.',
+      sound: 'الْخَطْوَةُ الثَّالِثَةُ: نُثَبِّتُ إِبْرَةَ الْفِرْجَارِ فِي الْمَرْكَزِ وَنُدِيرُ الْقَلَمَ لِرَسْمِ الدَّائِرَةِ كَامِلَةً.',
+      soundEn: 'Step 3: Anchor the needle at the center and rotate the compass smoothly to draw the full circle.'
     },
     {
       num: 4,
-      title: 'مبروك! اكتمل رسم الدائرة',
-      desc: `حصلنا على دائرة جميلة مركزها واضح، ونصف قطرها ${radiusChoice} سم، وقطرها الكلي ${radiusChoice * 2} سم.`,
-      sound: `أحسنت يا بطل! اكتمل رسم الدائرة بنجاح، طول نصف قطرها ${radiusChoice} سنتيمتر وطول قطرها ${radiusChoice * 2} سنتيمتر.`
+      title: 'مَبْرُوكٌ! اِكْتَمَلَ رَسْمُ الدَّائِرَةِ',
+      titleEn: 'Congratulations! Circle Complete',
+      desc: `حَصَلْنَا عَلَى دَائِرَةٍ جَمِيلَةٍ مَرْكَزُهَا وَاضِحٌ، وَنِصْفُ قُطْرِهَا ${radiusChoice} سَم، وَقُطْرُهَا الْكُلِّيُّ ${radiusChoice * 2} سَم.`,
+      descEn: `We now have a precise circle with a clear center, radius of ${radiusChoice} cm, and total diameter of ${radiusChoice * 2} cm.`,
+      sound: `أَحْسَنْتَ يَا بَطَلُ! اِكْتَمَلَ رَسْمُ الدَّائِرَةِ بِنَجَاحٍ، طُولُ نِصْفِ قُطْرِهَا ${radiusChoice} سَنْتِيمِتْراً وَطُولُ قُطْرِهَا ${radiusChoice * 2} سَنْتِيمِتْراً.`,
+      soundEn: `Well done champion! The circle is completely drawn with radius ${radiusChoice} cm and diameter ${radiusChoice * 2} cm.`
     }
   ];
 
@@ -53,7 +70,13 @@ export const CompassWorkshop: React.FC<CompassWorkshopProps> = ({ soundEnabled }
           if (prev >= 355) {
             setIsDrawing(false);
             setStep(4);
-            if (soundEnabled) speakArabicText(stepsData[3].sound);
+            if (soundEnabled) {
+              if (language === 'en') {
+                speakEnglishText(stepsData[3].soundEn);
+              } else {
+                speakArabicText(stepsData[3].sound);
+              }
+            }
             return 360;
           }
           return prev + 6;
@@ -61,12 +84,18 @@ export const CompassWorkshop: React.FC<CompassWorkshopProps> = ({ soundEnabled }
       }, 30);
     }
     return () => clearInterval(interval);
-  }, [isDrawing, drawProgress, soundEnabled]);
+  }, [isDrawing, drawProgress, soundEnabled, language]);
 
   const handleStartDraw = () => {
     setDrawProgress(0);
     setIsDrawing(true);
-    if (soundEnabled) speakArabicText('جاري تدوير الفرجار لرسم الدائرة بدقة.');
+    if (soundEnabled) {
+      if (language === 'en') {
+        speakEnglishText('Rotating compass smoothly to draw the circle.');
+      } else {
+        speakArabicText('جَارِي تَدْوِيرُ الْفِرْجَارِ لِرَسْمِ الدَّائِرَةِ بِدِقَّةٍ.');
+      }
+    }
   };
 
   const handleReset = () => {
@@ -77,10 +106,24 @@ export const CompassWorkshop: React.FC<CompassWorkshopProps> = ({ soundEnabled }
 
   const handleStepClick = (s: 1 | 2 | 3 | 4) => {
     setStep(s);
-    if (soundEnabled) speakArabicText(stepsData[s - 1].sound);
+    if (soundEnabled) {
+      if (language === 'en') {
+        speakEnglishText(stepsData[s - 1].soundEn);
+      } else {
+        speakArabicText(stepsData[s - 1].sound);
+      }
+    }
     if (s === 3 && drawProgress === 0) {
       handleStartDraw();
     }
+  };
+
+  const handleSpeakArabicCurrent = () => {
+    speakArabicText(stepsData[step - 1].sound);
+  };
+
+  const handleSpeakEnglishCurrent = () => {
+    speakEnglishText(stepsData[step - 1].soundEn);
   };
 
   // Pencil coordinates based on drawProgress
@@ -113,19 +156,29 @@ export const CompassWorkshop: React.FC<CompassWorkshopProps> = ({ soundEnabled }
             <Compass className="w-7 h-7 text-amber-300" />
           </div>
           <div>
-            <h2 className="font-black text-lg md:text-xl">ورشة الفرجار (المدور) الافتراضي</h2>
+            <h2 className="font-black text-lg md:text-xl">
+              {language === 'en' ? 'Virtual Compass Workshop' : 'وَرْشَةُ الْفِرْجَارِ (الْمِدْوَرِ) الِافْتِرَاضِيِّ'}
+            </h2>
             <p className="text-xs md:text-sm text-teal-100 font-medium">
-              تعلم كيف ترسم دائرة هندسية متقنة خطوة بخطوة بالفرجار والمسطرة المدرجة
+              {language === 'en'
+                ? 'Learn step-by-step how to draw a perfect geometric circle using a compass and a ruler'
+                : 'تَعَلَّمْ كَيْفَ تَرْسُمُ دَائِرَةً هَنْدَسِيَّةً مُتْقَنَةً خَطْوَةً بِخَطْوَةٍ بِالْفِرْجَارِ وَالْمِسْطَرَةِ الْمُدَرَّجَةِ'}
             </p>
           </div>
         </div>
 
         <button
-          onClick={() => speakArabicText(stepsData[step - 1].sound)}
+          onClick={() => {
+            if (language === 'en') {
+              speakEnglishText(stepsData[step - 1].soundEn);
+            } else {
+              speakArabicText(stepsData[step - 1].sound);
+            }
+          }}
           className="self-start md:self-auto px-4 py-2 rounded-2xl bg-white/20 hover:bg-white/30 text-white text-xs font-black flex items-center gap-2 transition-all border border-white/30 shadow-xs"
         >
           <Volume2 className="w-4 h-4 text-amber-300" />
-          <span>استمع لإرشادات الخطوة</span>
+          <span>{language === 'en' ? 'Listen to Step Guide' : 'اِسْتَمِعْ لِإِرْشَادَاتِ الْخَطْوَةِ'}</span>
         </button>
       </div>
 
@@ -155,7 +208,7 @@ export const CompassWorkshop: React.FC<CompassWorkshopProps> = ({ soundEnabled }
             </div>
             <div>
               <div className={`text-xs ${step === st.num ? 'font-black text-slate-950' : 'font-bold text-slate-800'}`}>
-                {st.title}
+                {language === 'en' ? st.titleEn : st.title}
               </div>
             </div>
           </button>
@@ -169,7 +222,9 @@ export const CompassWorkshop: React.FC<CompassWorkshopProps> = ({ soundEnabled }
           {/* Controls Bar above drawing */}
           <div className="w-full flex flex-wrap items-center justify-between gap-3 pb-3.5 border-b border-amber-100">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-black text-slate-800">فتحة الفرجار (نصف القطر):</span>
+              <span className="text-xs font-black text-slate-800">
+                {language === 'en' ? 'Compass Opening (Radius):' : 'فَتْحَةُ الْفِرْجَارِ (نِصْفُ الْقُطْرِ):'}
+              </span>
               <div className="flex items-center gap-1.5 bg-amber-100/70 p-1.5 rounded-2xl border border-amber-200">
                 {[2.5, 3.5, 4.5].map((r) => (
                   <button
@@ -185,7 +240,7 @@ export const CompassWorkshop: React.FC<CompassWorkshopProps> = ({ soundEnabled }
                         : 'text-amber-950 hover:bg-amber-200/70'
                     }`}
                   >
-                    {r} سم
+                    {r} {language === 'en' ? 'cm' : 'سَم'}
                   </button>
                 ))}
               </div>
@@ -197,7 +252,7 @@ export const CompassWorkshop: React.FC<CompassWorkshopProps> = ({ soundEnabled }
                 className="px-3.5 py-2 rounded-2xl border border-amber-200/80 bg-amber-50/50 text-xs font-bold text-slate-700 hover:bg-amber-100/60 flex items-center gap-1.5 transition-all shadow-2xs"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                <span>إعادة الورقة فارغة</span>
+                <span>{language === 'en' ? 'Clear Paper' : 'إِعَادَةُ الْوَرَقَةِ فَارِغَةً'}</span>
               </button>
 
               {drawProgress < 360 ? (
@@ -207,12 +262,16 @@ export const CompassWorkshop: React.FC<CompassWorkshopProps> = ({ soundEnabled }
                   className="px-4 py-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-black flex items-center gap-1.5 shadow-md shadow-emerald-600/20 transition-all disabled:opacity-50"
                 >
                   <Play className="w-3.5 h-3.5" />
-                  <span>{isDrawing ? 'جاري الرسم...' : 'دوّر الفرجار وارسم'}</span>
+                  <span>
+                    {isDrawing
+                      ? (language === 'en' ? 'Drawing...' : 'جَارِي الرَّسْمُ...')
+                      : (language === 'en' ? 'Rotate & Draw' : 'دَوِّرِ الْفِرْجَارَ وَارْسُمْ')}
+                  </span>
                 </button>
               ) : (
                 <span className="text-xs font-black text-emerald-800 bg-emerald-100 border border-emerald-300 px-3.5 py-1.5 rounded-2xl flex items-center gap-1.5 shadow-2xs">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <span>دائرة كاملة ومتقنة!</span>
+                  <span>{language === 'en' ? 'Perfect Circle Complete!' : 'دَائِرَةٌ كَامِلَةٌ وَمُتْقَنَةٌ!'}</span>
                 </span>
               )}
             </div>
@@ -389,13 +448,57 @@ export const CompassWorkshop: React.FC<CompassWorkshopProps> = ({ soundEnabled }
         {/* Instructions & Curriculum Tips */}
         <div className="lg:col-span-4 space-y-4">
           <div className="bg-white/90 backdrop-blur-xs p-5 rounded-3xl border border-amber-200/80 shadow-md shadow-amber-500/5 space-y-3.5">
-            <span className="text-xs font-black px-3 py-1 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-900 shadow-2xs">
-              الخطوة رقم {step} من 4
-            </span>
-            <h3 className="font-black text-base text-slate-900">{stepsData[step - 1].title}</h3>
-            <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
-              {stepsData[step - 1].desc}
-            </p>
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <span className="text-xs font-black px-3 py-1 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-900 shadow-2xs">
+                {language === 'en' ? `Step ${step} of 4` : `الخطوة رقم ${step} من 4`}
+              </span>
+
+              <div className="flex items-center gap-1.5">
+                {language !== 'en' && (
+                  <button
+                    onClick={handleSpeakArabicCurrent}
+                    className="p-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 border border-amber-200 transition-colors flex items-center gap-1 text-xs font-black shadow-2xs"
+                    title="استمع بالعربية"
+                  >
+                    <Volume2 className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>عربي</span>
+                  </button>
+                )}
+
+                {language !== 'ar' && (
+                  <button
+                    onClick={handleSpeakEnglishCurrent}
+                    className="p-2 rounded-xl bg-blue-100 hover:bg-blue-200 text-blue-950 border border-blue-200 transition-colors flex items-center gap-1 text-xs font-black shadow-2xs"
+                    title="Listen in slow American English"
+                  >
+                    <span>🇺🇸</span>
+                    <span>English</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <h3 className="font-black text-base text-slate-900">
+              {language === 'en' ? stepsData[step - 1].titleEn : stepsData[step - 1].title}
+            </h3>
+            {language === 'bilingual' && stepsData[step - 1].titleEn && (
+              <div className="text-xs text-blue-800 font-bold -mt-2">
+                🇺🇸 {stepsData[step - 1].titleEn}
+              </div>
+            )}
+
+            {language !== 'en' && (
+              <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
+                {stepsData[step - 1].desc}
+              </p>
+            )}
+
+            {(language === 'en' || language === 'bilingual') && stepsData[step - 1].descEn && (
+              <p className={`text-xs sm:text-sm text-slate-800 font-medium leading-relaxed ${language === 'bilingual' ? 'pt-2 border-t border-amber-100 text-blue-950' : ''}`}>
+                {language === 'bilingual' && <strong className="text-blue-800">🇺🇸 English: </strong>}
+                {stepsData[step - 1].descEn}
+              </p>
+            )}
 
             <div className="pt-2">
               <button
@@ -408,7 +511,11 @@ export const CompassWorkshop: React.FC<CompassWorkshopProps> = ({ soundEnabled }
                 }}
                 className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-black transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20"
               >
-                <span>{step < 4 ? 'الانتقال للخطوة التالية' : 'رسم دائرة جديدة أخرى'}</span>
+                <span>
+                  {step < 4 
+                    ? (language === 'en' ? 'Next Step →' : 'الِانْتِقَالُ لِلْخَطْوَةِ التَّالِيَةِ ←') 
+                    : (language === 'en' ? 'Draw a New Circle 🔄' : 'رَسْمُ دَائِرَةٍ جَدِيدَةٍ أُخْرَى 🔄')}
+                </span>
               </button>
             </div>
           </div>
@@ -417,14 +524,27 @@ export const CompassWorkshop: React.FC<CompassWorkshopProps> = ({ soundEnabled }
           <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-200 p-5 rounded-3xl space-y-2.5 text-indigo-950 shadow-sm">
             <h4 className="text-xs font-black flex items-center gap-1.5 text-indigo-950">
               <Pencil className="w-4 h-4 text-indigo-600" />
-              <span>نصائح المعلم للرسم الدقيق في الامتحان:</span>
+              <span>
+                {language === 'en'
+                  ? 'Teacher Tips for Accurate Exam Drawing:'
+                  : 'نَصَائِحُ الْمُعَلِّمِ لِلرَّسْمِ الدَّقِيقِ فِي الِامْتِحَانِ:'}
+              </span>
             </h4>
-            <ul className="text-xs space-y-2 text-slate-700 list-disc list-inside font-medium leading-relaxed">
-              <li>تأكد من أن برغي الفرجار مشدود جيداً حتى لا تنزلق الساق أثناء التدوير.</li>
-              <li>اجعل رأس قلم الرصاص مساوياً لطول شوكة الفرجار تماماً.</li>
-              <li>لا تضغط بقوة على القلم، بل دوّر الفرجار برفق من المقبض العلوي فقط.</li>
-              <li>فتحة الفرجار بالمسطرة دائماً تمثل <strong className="text-indigo-900 font-black">نصف القطر</strong> وليس القطر!</li>
-            </ul>
+            {language === 'en' ? (
+              <ul className="text-xs space-y-2 text-slate-700 list-disc list-inside font-medium leading-relaxed">
+                <li>Make sure the compass screw is tightened securely so the legs do not slip.</li>
+                <li>Align the pencil lead tip to match the exact height of the needle tip.</li>
+                <li>Do not press hard on the pencil; rotate gently by the top handle only.</li>
+                <li>Compass opening measured on the ruler is ALWAYS the <strong className="text-indigo-900 font-black">radius</strong>, not the diameter!</li>
+              </ul>
+            ) : (
+              <ul className="text-xs space-y-2 text-slate-700 list-disc list-inside font-medium leading-relaxed">
+                <li>تَأَكَّدْ مِنْ أَنَّ بُرْغِيَّ الْفِرْجَارِ مَشْدُودٌ جَيِّداً حَتَّى لَا تَنْزَلِقَ السَّاقُ أَثْنَاءَ التَّدْوِيرِ.</li>
+                <li>اِجْعَلْ رَأْسَ قَلَمِ الرَّصَاصِ مُسَاوِياً لِطُولِ شَوْكَةِ الْفِرْجَارِ تَمَاماً.</li>
+                <li>لَا تَضْغَطْ بِقُوَّةٍ عَلَى الْقَلَمِ، بَلْ دَوِّرِ الْفِرْجَارَ بِرِفْقٍ مِنَ الْمَقْبَضِ الْعُلْوِيِّ فَقَطْ.</li>
+                <li>فَتْحَةُ الْفِرْجَارِ بِالْمِسْطَرَةِ دَائِماً تُمَثِّلُ <strong className="text-indigo-900 font-black">نِصْفَ الْقُطْرِ</strong> وَلَيْسَ الْقُطْرَ!</li>
+              </ul>
+            )}
           </div>
         </div>
       </div>

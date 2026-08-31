@@ -1,25 +1,27 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
-  CircleDot, 
+  Compass, 
   Ruler, 
   HelpCircle, 
   RotateCw, 
   Volume2, 
-  Eye, 
-  EyeOff, 
   Sparkles,
   MoveHorizontal,
   Info,
-  CheckCircle2
+  CheckCircle2,
+  Globe
 } from 'lucide-react';
-import { speakArabicText } from '../utils/speech';
+import { AppLanguage } from '../types';
+import { speakArabicText, speakEnglishText } from '../utils/speech';
 
 interface InteractiveCircleExplorerProps {
   soundEnabled: boolean;
+  language?: AppLanguage;
 }
 
 export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps> = ({
   soundEnabled,
+  language = 'bilingual',
 }) => {
   // Geometric State
   const [radiusCm, setRadiusCm] = useState<number>(4); // in virtual cm (2 to 6 cm)
@@ -114,6 +116,7 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
 
   // Preset scenarios for easy primary classroom exploration
   const applyPreset = (preset: 'circle' | 'center' | 'radius' | 'chord' | 'diameter' | 'disc' | 'compare' | 'all') => {
+    const isEn = language === 'en';
     if (preset === 'circle') {
       setShowCenter(true);
       setShowRadius(false);
@@ -122,7 +125,10 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
       setShowChord(false);
       setShowDisc(false);
       setFocusedElement('circle');
-      if (soundEnabled) speakArabicText('الدائرة: خط منحني مغلق ومستوٍ، كل نقاطه تبعد بنفس المسافة عن نقطة ثابتة في وسطه تسمى المركز.');
+      if (soundEnabled) {
+        if (isEn) speakEnglishText('Circle: A closed flat curved line. Every point on it is at equal distance from the center.');
+        else speakArabicText('الدَّائِرَةُ: خَطٌّ مُنْحَنٍ مُغْلَقٌ وَمُسْتَوٍ، كُلُّ نِقَاطِهِ تَبْعُدُ بِنَفْسِ الْمَسَافَةِ عَنْ نُقْطَةٍ ثَابِتَةٍ فِي وَسَطِهِ تُسَمَّى الْمَرْكَزَ.');
+      }
     } else if (preset === 'center') {
       setShowCenter(true);
       setShowRadius(false);
@@ -131,7 +137,10 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
       setShowChord(false);
       setShowDisc(false);
       setFocusedElement('center');
-      if (soundEnabled) speakArabicText('المركز: نقطة وحيدة في وسط الدائرة تماماً، ونضع عليها إبرة المِدْوَر عند الرسم.');
+      if (soundEnabled) {
+        if (isEn) speakEnglishText('Center: The single fixed point in the exact middle of the circle. We place the compass needle here.');
+        else speakArabicText('الْمَرْكَزُ: نُقْطَةٌ وَحِيدَةٌ فِي وَسَطِ الدَّائِرَةِ تَمَاماً، وَنَضَعُ عَلَيْهَا إِبْرَةَ الْمِدْوَرِ عِنْدَ الرَّسْمِ.');
+      }
     } else if (preset === 'radius') {
       setShowCenter(true);
       setShowRadius(true);
@@ -140,7 +149,10 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
       setShowChord(false);
       setShowDisc(false);
       setFocusedElement('radius');
-      if (soundEnabled) speakArabicText('نصف القطر: قطعة مستقيمة تصل بين المركز وأي نقطة على الدائرة.');
+      if (soundEnabled) {
+        if (isEn) speakEnglishText(`Radius: A line segment connecting the center to any point on the circle. Here it is ${radiusCm} centimeters.`);
+        else speakArabicText(`نِصْفُ الْقُطْرِ: قِطْعَةٌ مُسْتَقِيمَةٌ تَصِلُ بَيْنَ الْمَرْكَزِ وَأَيِّ نُقْطَةٍ عَلَى الدَّائِرَةِ. طُولُهُ هُنَا ${radiusCm} سَنْتِيمِتْرَاتٍ.`);
+      }
     } else if (preset === 'chord') {
       setShowCenter(true);
       setShowRadius(false);
@@ -149,7 +161,10 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
       setShowChord(true);
       setShowDisc(false);
       setFocusedElement('chord');
-      if (soundEnabled) speakArabicText('الوتر: قطعة مستقيمة تصل بين أي نقطتين على الدائرة.');
+      if (soundEnabled) {
+        if (isEn) speakEnglishText('Chord: A line segment connecting any two points on the circle.');
+        else speakArabicText('الْوَتَرُ: قِطْعَةٌ مُسْتَقِيمَةٌ تَصِلُ بَيْنَ أَيِّ نُقْطَتَيْنِ عَلَى الدَّائِرَةِ.');
+      }
     } else if (preset === 'diameter') {
       setShowCenter(true);
       setShowRadius(false);
@@ -158,7 +173,10 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
       setShowChord(false);
       setShowDisc(false);
       setFocusedElement('diameter');
-      if (soundEnabled) speakArabicText(`الْقُطْرُ: وَتَرٌ يَمُرُّ بِالْمَرْكَزِ وَيُسَاوِي ضِعْفَ نِصْفِ الْقُطْرِ. إِذَا كَانَ نِصْفُ الْقُطْرِ ${radiusCm} سَنْتِمِتْراً، فَالْقُطْرُ يُسَاوِي ${diameterCm} سَنْتِمِتْراً.`);
+      if (soundEnabled) {
+        if (isEn) speakEnglishText(`Diameter: A chord passing through the center, equal to 2 times the radius. If radius is ${radiusCm} cm, diameter is ${diameterCm} cm.`);
+        else speakArabicText(`الْقُطْرُ: وَتَرٌ يَمُرُّ بِالْمَرْكَزِ وَيُسَاوِي ضِعْفَ نِصْفِ الْقُطْرِ. إِذَا كَانَ نِصْفُ الْقُطْرِ ${radiusCm} سَنْتِمِتْراً، فَالْقُطْرُ يُسَاوِي ${diameterCm} سَنْتِمِتْراً.`);
+      }
     } else if (preset === 'disc') {
       setShowCenter(true);
       setShowRadius(true);
@@ -167,7 +185,10 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
       setShowChord(false);
       setShowDisc(true);
       setFocusedElement('disc');
-      if (soundEnabled) speakArabicText('الْقُرْصُ هُوَ الْمِسَاحَةُ الْمُمْتَلِئَةُ دَاخِلَ الدَّائِرَةِ مِثْلَ قِطْعَةِ النُّقُودِ، بَيْنَمَا الدَّائِرَةُ هِيَ الْخَطُّ الْخَارِجِيُّ فَقَطْ مِثْلَ السِّوَارِ.');
+      if (soundEnabled) {
+        if (isEn) speakEnglishText('A disc is the entire filled surface inside the circle like a coin, whereas a circle is just the outline ring.');
+        else speakArabicText('الْقُرْصُ هُوَ الْمِسَاحَةُ الْمُمْتَلِئَةُ دَاخِلَ الدَّائِرَةِ مِثْلَ قِطْعَةِ النُّقُودِ، بَيْنَمَا الدَّائِرَةُ هِيَ الْخَطُّ الْخَارِجِيُّ فَقَطْ مِثْلَ السِّوَارِ.');
+      }
     } else if (preset === 'compare') {
       setShowCenter(true);
       setShowRadius(true);
@@ -176,7 +197,10 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
       setShowChord(false);
       setShowDisc(false);
       setFocusedElement('diameter');
-      if (soundEnabled) speakArabicText(`مُقَارَنَةٌ: الْقُطْرُ يُسَاوِي نِصْفَيْ قُطْرٍ. الْقُطْرُ طُولُهُ ${diameterCm} سَنْتِمِتْراً وَنِصْفُ الْقُطْرِ طُولُهُ ${radiusCm} سَنْتِمِتْراً.`);
+      if (soundEnabled) {
+        if (isEn) speakEnglishText(`Comparison: Diameter equals 2 radii. Diameter is ${diameterCm} cm and radius is ${radiusCm} cm.`);
+        else speakArabicText(`مُقَارَنَةٌ: الْقُطْرُ يُسَاوِي نِصْفَيْ قُطْرٍ. الْقُطْرُ طُولُهُ ${diameterCm} سَنْتِمِتْراً وَنِصْفُ الْقُطْرِ طُولُهُ ${radiusCm} سَنْتِمِتْراً.`);
+      }
     } else if (preset === 'all') {
       setShowCenter(true);
       setShowRadius(true);
@@ -193,68 +217,102 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
     switch (focusedElement) {
       case 'circle':
         return {
-          title: 'ما هي الدائرة؟',
-          badge: 'المفهوم الأساسي',
+          title: 'مَا هِيَ الدَّائِرَةُ؟',
+          titleEn: 'What is a Circle?',
+          badge: 'الْمَفْهُومُ الْأَسَاسِيُّ',
+          badgeEn: 'Core Concept',
           color: 'bg-emerald-50/90 border-emerald-300 text-emerald-950',
-          text: 'الدائرة هي خط منحني مغلق ومستوٍ. كل نقطة تقع على هذا الخط تبعد بنفس المسافة تماماً عن نقطة في الوسط تسمى المركز. الدائرة فارغة من الداخل مثل الخاتم أو إطار العجلة.',
-          tip: 'نرسم الدائرة بدقة تامة في كراس الرياضيات باستعمال أداة المِدْوَر (الفرجار) والمسطرة المدرجة.'
+          text: 'الدَّائِرَةُ هِيَ خَطٌّ مُنْحَنٍ مُغْلَقٌ وَمُسْتَوٍ. كُلُّ نُقْطَةٍ تَقَعُ عَلَى هَذَا الْخَطِّ تَبْعُدُ بِنَفْسِ الْمَسَافَةِ تَمَاماً عَنْ نُقْطَةٍ فِي الْوَسَطِ تُسَمَّى الْمَرْكَزَ. الدَّائِرَةُ فَارِغَةٌ مِنَ الدَّاخِلِ مِثْلَ الْخَاتَمِ أَوْ إِطَارِ الْعَجَلَةِ.',
+          textEn: 'A circle is a closed curved 2D line. Every point on this line is at the exact same distance from a central fixed point called the center. The circle is hollow inside, like a ring or a bicycle rim.',
+          tip: 'نَرْسُمُ الدَّائِرَةَ بِدِقَّةٍ تَامَّةٍ فِي كُرَّاسِ الرِّيَاضِيَّاتِ بِاسْتِعْمَالِ أَدَاةِ الْمِدْوَرِ (الْفِرْجَارِ) وَالْمِسْطَرَةِ الْمُدَرَّجَةِ.',
+          tipEn: 'We draw a circle accurately in our math notebook using a compass and a ruler.'
         };
       case 'center':
         return {
-          title: 'ما هو المركز؟',
-          badge: 'نقطة الوسط',
+          title: 'مَا هُوَ الْمَرْكَزُ؟',
+          titleEn: 'What is the Center?',
+          badge: 'نُقْطَةُ الْوَسَطِ',
+          badgeEn: 'Center Point',
           color: 'bg-rose-50/90 border-rose-300 text-rose-950',
-          text: 'المركز هو النقطة الوحيدة الثابتة في قلب الدائرة ووسطها تماماً. تبعد جميع نقاط الدائرة عن المركز بنفس المسافة دائماً. نغرس فيه إبرة المِدْوَر عند بدء الرسم.',
-          tip: 'نسميه بالكلمة البسيطة "المركز" دون الحاجة لأي رموز معقدة.'
+          text: 'الْمَرْكَزُ هُوَ النُّقْطَةُ الْوَحِيدَةُ الثَّابِتَةُ فِي قَلْبِ الدَّائِرَةِ وَوَسَطِهَا تَمَاماً. تَبْعُدُ جَمِيعُ نِقَاطِ الدَّائِرَةِ عَنِ الْمَرْكَزِ بِنَفْسِ الْمَسَافَةِ دَائِماً. نَغْرِسُ فِيهِ إِبْرَةَ الْمِدْوَرِ عِنْدَ بَدْءِ الرَّسْمِ.',
+          textEn: 'The center is the single fixed point right in the middle of the circle. All points on the circle are at equal distance from it. We place the compass needle on it.',
+          tip: 'نُسَمِّيهِ بِالْكَلِمَةِ الْبَسِيطَةِ "الْمَرْكَزُ" دُونَ الْحَاجَةِ لِأَيِّ رُمُوزٍ مُعَقَّدَةٍ.',
+          tipEn: 'It is the central point that defines the whole circle.'
         };
       case 'radius':
         return {
-          title: `ما هو نصف القطر؟ (${radiusCm} سنتيمتر)`,
-          badge: 'المسافة من المركز للدائرة',
+          title: `مَا هُوَ نِصْفُ الْقُطْرِ؟ (${radiusCm} سَنْتِمِتْراً)`,
+          titleEn: `What is the Radius? (${radiusCm} cm)`,
+          badge: 'الْمَسَافَةُ مِنَ الْمَرْكَزِ لِلدَّائِرَةِ',
+          badgeEn: 'Center to Circumference',
           color: 'bg-orange-50/90 border-orange-300 text-orange-950',
-          text: `نصف القطر هو كل قطعة مستقيمة تصل بين المركز وأي نقطة تقع على الدائرة. طوله هنا في الرسم هو ${radiusCm} سنتيمتر. يمكنك تدويره وسحبه ولاحظ أن طوله يبقى ثابتاً في كل الاتجاهات!`,
-          tip: 'كل أنصاف أقطار الدائرة الواحدة متقايسة ولها نفس الطول تماماً!'
+          text: `نِصْفُ الْقُطْرِ هُوَ كُلُّ قِطْعَةٍ مُسْتَقِيمَةٍ تَصِلُ بَيْنَ الْمَرْكَزِ وَأَيِّ نُقْطَةٍ تَقَعُ عَلَى الدَّائِرَةِ. طُولُهُ هُنَا فِي الرَّسْمِ هُوَ ${radiusCm} سَنْتِمِتْراً. يُمْكِنُكَ تَدْوِيرُهُ وَسَحْبُهُ، وَلَاحِظْ أَنَّ طُولَهُ يَبْقَى ثَابِتاً فِي كُلِّ الِاتِّجَاهَاتِ!`,
+          textEn: `The radius is any line segment connecting the center to any point on the circle. Its length here is ${radiusCm} centimeters. It stays constant in all directions!`,
+          tip: 'كُلُّ أَنْصَافِ أَقْطَارِ الدَّائِرَةِ الْوَاحِدَةِ مُتَقَايِسَةٌ وَلَهَا نَفْسُ الطُّولِ تَمَاماً!',
+          tipEn: 'All radii of the same circle have the exact same length!'
         };
       case 'chord':
         return {
-          title: `ما هو الوتر؟ (${chordLengthCm} سنتيمتر)`,
-          badge: 'القطعة بين نقطتين',
+          title: `مَا هُوَ الْوَتَرُ؟ (${chordLengthCm} سَنْتِمِتْراً)`,
+          titleEn: `What is a Chord? (${chordLengthCm} cm)`,
+          badge: 'الْقِطْعَةُ بَيْنَ نُقْطَتَيْنِ',
+          badgeEn: 'Segment between 2 points',
           color: 'bg-purple-50/90 border-purple-300 text-purple-950',
-          text: `الوتر هو قطعة مستقيمة تصل بين أي نقطتين تقعان على الدائرة. اسحب النقطتين البنفسجيتين على محيط الدائرة بيدك لترى كيف يتغير طول الوتر بحرية!`,
-          tip: isChordNearDiameter ? '✨ انظر! عندما يمر الوتر بالمركز مباشرة، يصبح اسمه "قطراً" وهو أطول وتر في الدائرة!' : 'الوتر لا يشترط مروره بالمركز.'
+          text: `الْوَتَرُ هُوَ قِطْعَةٌ مُسْتَقِيمَةٌ تَصِلُ بَيْنَ أَيِّ نُقْطَتَيْنِ تَقَعَانِ عَلَى الدَّائِرَةِ. اِسْحَبِ النُّقْطَتَيْنِ الْبَنَفْسَجِيَّتَيْنِ عَلَى مُحِيطِ الدَّائِرَةِ بِيَدِكَ لِتَرَى كَيْفَ يَتَغَيَّرُ طُولُ الْوَتَرِ بِحُرِّيَّةٍ!`,
+          textEn: `A chord is a straight line segment joining any two points on the circle. Drag the purple dots around the circle to see how its length changes!`,
+          tip: isChordNearDiameter ? '✨ اُنْظُرْ! عِنْدَمَا يَمُرُّ الْوَتَرُ بِالْمَرْكَزِ مُبَاشَرَةً، يُصْبِحُ اسْمُهُ "قُطْراً" وَهُوَ أَطْوَلُ وَتَرٍ فِي الدَّائِرَةِ!' : 'الْوَتَرُ لَا يُشْتَرَطُ مُرُورُهُ بِالْمَرْكَزِ.',
+          tipEn: isChordNearDiameter ? 'Look! When the chord passes through the center, it is called a diameter!' : 'A chord does not have to pass through the center.'
         };
       case 'diameter':
         return {
-          title: `ما هو القطر؟ (${diameterCm} سنتيمتر)`,
-          badge: 'يمر بالمركز ويقسم الدائرة',
+          title: `مَا هُوَ الْقُطْرُ؟ (${diameterCm} سَنْتِمِتْراً)`,
+          titleEn: `What is the Diameter? (${diameterCm} cm)`,
+          badge: 'يَمُرُّ بِالْمَرْكَزِ وَيَقْسِمُ الدَّائِرَةَ',
+          badgeEn: 'Passes through center',
           color: 'bg-blue-50/90 border-blue-300 text-blue-950',
-          text: `القطر هو قطعة مستقيمة تصل بين نقطتين من الدائرة وتمر حتماً بالمركز. طول القطر يساوي ضِعف نصف القطر (${radiusCm} + ${radiusCm} = ${diameterCm} سم). القطر يقسم الدائرة إلى نصفين متطابقين تماماً.`,
-          tip: 'القطر هو أطول وتر في الدائرة لأنه يمر بالمركز.'
+          text: `الْقُطْرُ هُوَ قِطْعَةٌ مُسْتَقِيمَةٌ تَصِلُ بَيْنَ نُقْطَتَيْنِ مِنَ الدَّائِرَةِ وَتَمُرُّ حَتْماً بِالْمَرْكَزِ. طُولُ الْقُطْرِ يُسَاوِي ضِعْفَ نِصْفِ الْقُطْرِ (${radiusCm} + ${radiusCm} = ${diameterCm} سَم). الْقُطْرُ يَقْسِمُ الدَّائِرَةَ إِلَى نِصْفَيْنِ مُتَطَابِقَيْنِ تَمَاماً.`,
+          textEn: `The diameter is a line segment connecting two points on the circle and passing through the center. Diameter length = 2 × Radius (${radiusCm} + ${radiusCm} = ${diameterCm} cm).`,
+          tip: 'الْقُطْرُ هُوَ أَطْوَلُ وَتَرٍ فِي الدَّائِرَةِ لِأَنَّهُ يَمُرُّ بِالْمَرْكَزِ.',
+          tipEn: 'The diameter is the longest possible chord in a circle.'
         };
       case 'disc':
         return {
-          title: 'ما هو القرص؟ (الفرق بين القرص والدائرة)',
-          badge: 'المساحة الممتلئة',
+          title: 'مَا هُوَ الْقُرْصُ؟ (الْفَرْقُ بَيْنَ الْقُرْصِ وَالدَّائِرَةِ)',
+          titleEn: 'What is a Disc? (Disc vs Circle)',
+          badge: 'الْمِسَاحَةُ الْمُمْتَلِئَةُ',
+          badgeEn: 'Filled surface',
           color: 'bg-teal-50/90 border-teal-300 text-teal-950',
-          text: 'الدائرة هي الخط الخارجي فقط (فارغة من الداخل مثل السوار)، أما القرص فهو الدائرة مع كل المنطقة الملونة والممتلئة بداخلها (مثل قطعة الدينار الجزائري أو الصحن).',
-          tip: 'في الرياضيات نقول: محيط الدائرة، بينما نقول مساحة القرص.'
+          text: 'الدَّائِرَةُ هِيَ الْخَطُّ الْخَارِجِيُّ فَقَطْ (فَارِغَةٌ مِنَ الدَّاخِلِ مِثْلَ السِّوَارِ)، أَمَّا الْقُرْصُ فَهُوَ الدَّائِرَةُ مَعَ كُلِّ الْمِنْطَقَةِ الْمُلَوَّنَةِ وَالْمُمْتَلِئَةِ بِدَاخِلِهَا (مِثْلَ قِطْعَةِ الدِّينَارِ الْجَزَائِرِيِّ أَوِ الصَّحْنِ).',
+          textEn: 'The circle is just the outline boundary (empty inside like a bracelet). The disc is the entire filled surface inside the circle (like a coin or a plate).',
+          tip: 'فِي الرِّيَاضِيَّاتِ نَقُولُ: مُحِيطُ الدَّائِرَةِ، بَيْنَمَا نَقُولُ مِسَاحَةُ الْقُرْصِ.',
+          tipEn: 'We measure the perimeter of a circle, and the area of a disc.'
         };
       default:
         return {
-          title: 'مستكشف عناصر الدائرة',
-          badge: 'لوحة التحكم',
+          title: 'مُسْتَكْشِفُ عَنَاصِرِ الدَّائِرَةِ',
+          titleEn: 'Circle Elements Explorer',
+          badge: 'لَوْحَةُ التَّحَكُّمِ',
+          badgeEn: 'Control Panel',
           color: 'bg-amber-50 border-amber-300 text-amber-950',
-          text: 'اضغط على أي عنصر في لوحة المفاهيم للتعرف عليه وملاحظته مباشرة على الرسم الهندسي!',
-          tip: 'يمكنك تغيير طول نصف القطر وتدوير القطع بحرية تامة.'
+          text: 'اِضْغَطْ عَلَى أَيِّ عُنْصُرٍ فِي لَوْحَةِ الْمَفَاهِيمِ لِلتَّعَرُّفِ عَلَيْهِ وَمُلَاحَظَتِهِ مُبَاشَرَةً عَلَى الرَّسْمِ الْهَنْدَسِيِّ!',
+          textEn: 'Click on any concept in the control panel to explore it on the interactive canvas!',
+          tip: 'يُمْكِنُكَ تَغْيِيرُ طُولِ نِصْفِ الْقُطْرِ وَتَدْوِيرُ الْقِطَعِ بِحُرِّيَّةٍ تَامَّةٍ.',
+          tipEn: 'You can adjust the radius length and drag endpoints freely.'
         };
     }
   };
 
   const explanation = getExplanation();
 
-  const handleSpeakActive = () => {
+  const handleSpeakArabic = () => {
     speakArabicText(`${explanation.title}. ${explanation.text} ${explanation.tip}`);
   };
+
+  const handleSpeakEnglish = () => {
+    speakEnglishText(`${explanation.titleEn || explanation.title}. ${explanation.textEn || explanation.text} ${explanation.tipEn || explanation.tip}`);
+  };
+
+  const isEn = language === 'en';
 
   return (
     <div className="space-y-6" id="interactive-circle-explorer">
@@ -265,9 +323,13 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
             <Sparkles className="w-6 h-6 text-amber-300" />
           </div>
           <div>
-            <h2 className="font-black text-base md:text-lg">مستكشف الدائرة ومفاهيمها الأساسية (دون رموز)</h2>
+            <h2 className="font-black text-base md:text-lg">
+              {isEn ? 'Interactive Circle Explorer (Primary Math)' : 'مُسْتَكْشِفُ الدَّائِرَةِ وَمَفَاهِيمِهَا الْأَسَاسِيَّةِ (دُونَ رُمُوزٍ)'}
+            </h2>
             <p className="text-xs text-teal-100 font-medium mt-0.5">
-              مخصص للسنتين الرابعة والخامسة ابتدائي وفق مناهج الجيل الثاني في الجزائر
+              {isEn 
+                ? 'Designed for Primary Grades 4 & 5 (Ages 8-10) • Clear, hands-on visual geometry' 
+                : 'مُخَصَّصٌ لِلسَّنَتَيْنِ الرَّابِعَةِ وَالْخَامِسَةِ ابْتِدَائِيٍّ وَفْقَ مَنَاهِجِ الْجِيلِ الثَّانِي فِي الْجَزَائِرِ'}
             </p>
           </div>
         </div>
@@ -281,11 +343,14 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
               setShowChord(true);
               setShowDisc(false);
               setFocusedElement('circle');
-              if (soundEnabled) speakArabicText('عرض جميع عناصر الدائرة: المركز، نصف القطر، الوتر، والقطر.');
+              if (soundEnabled) {
+                if (isEn) speakEnglishText('Displaying all circle elements together: Center, Radius, Chord, and Diameter.');
+                else speakArabicText('عَرْضُ جَمِيعِ عَنَاصِرِ الدَّائِرَةِ مَعاً: الْمَرْكَزُ، نِصْفُ الْقُطْرِ، الْوَتَرُ، وَالْقُطْرُ.');
+              }
             }}
             className="px-4 py-2 rounded-2xl bg-amber-400 text-slate-950 hover:bg-amber-300 transition-all font-black text-xs shadow-sm border border-amber-300 ring-2 ring-amber-300/50"
           >
-            إظهار كل العناصر معاً
+            {isEn ? 'Show All Elements' : 'إِظْهَارُ كُلِّ الْعَنَاصِرِ مَعاً'}
           </button>
         </div>
       </div>
@@ -295,7 +360,7 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
         {/* 1. الدائرة */}
         <button
           onClick={() => applyPreset('circle')}
-          className={`p-3.5 rounded-2xl border text-right transition-all flex flex-col justify-between gap-2 shadow-2xs ${
+          className={`p-3.5 rounded-2xl border ${isEn ? 'text-left' : 'text-right'} transition-all flex flex-col justify-between gap-2 shadow-2xs ${
             focusedElement === 'circle'
               ? 'bg-emerald-500 text-white border-emerald-600 shadow-md ring-4 ring-emerald-300/40 font-black'
               : 'bg-white/90 border-amber-200/80 text-slate-800 hover:bg-emerald-50 hover:border-emerald-300'
@@ -306,15 +371,17 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${focusedElement === 'circle' ? 'bg-white/20' : 'bg-emerald-100 text-emerald-800'}`}>1</span>
           </div>
           <div>
-            <div className="font-black text-xs">ما هي الدائرة؟</div>
-            <div className={`text-[10px] font-medium ${focusedElement === 'circle' ? 'text-emerald-100' : 'text-slate-500'}`}>الخط المنحني المغلق</div>
+            <div className="font-black text-xs">{isEn ? 'The Circle' : 'مَا هِيَ الدَّائِرَةُ؟'}</div>
+            <div className={`text-[10px] font-medium ${focusedElement === 'circle' ? 'text-emerald-100' : 'text-slate-500'}`}>
+              {isEn ? 'Curved outer line' : 'الْخَطُّ الْمُنْحَنِي الْمُغْلَقُ'}
+            </div>
           </div>
         </button>
 
         {/* 2. المركز */}
         <button
           onClick={() => applyPreset('center')}
-          className={`p-3.5 rounded-2xl border text-right transition-all flex flex-col justify-between gap-2 shadow-2xs ${
+          className={`p-3.5 rounded-2xl border ${isEn ? 'text-left' : 'text-right'} transition-all flex flex-col justify-between gap-2 shadow-2xs ${
             focusedElement === 'center'
               ? 'bg-rose-600 text-white border-rose-700 shadow-md ring-4 ring-rose-300/40 font-black'
               : 'bg-white/90 border-amber-200/80 text-slate-800 hover:bg-rose-50 hover:border-rose-300'
@@ -325,15 +392,17 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${focusedElement === 'center' ? 'bg-white/20' : 'bg-rose-100 text-rose-800'}`}>2</span>
           </div>
           <div>
-            <div className="font-black text-xs">المركز</div>
-            <div className={`text-[10px] font-medium ${focusedElement === 'center' ? 'text-rose-100' : 'text-slate-500'}`}>نقطة الوسط الثابتة</div>
+            <div className="font-black text-xs">{isEn ? 'Center' : 'الْمَرْكَزُ'}</div>
+            <div className={`text-[10px] font-medium ${focusedElement === 'center' ? 'text-rose-100' : 'text-slate-500'}`}>
+              {isEn ? 'Fixed middle point' : 'نُقْطَةُ الْوَسَطِ الثَّابِتَةُ'}
+            </div>
           </div>
         </button>
 
         {/* 3. نصف القطر */}
         <button
           onClick={() => applyPreset('radius')}
-          className={`p-3.5 rounded-2xl border text-right transition-all flex flex-col justify-between gap-2 shadow-2xs ${
+          className={`p-3.5 rounded-2xl border ${isEn ? 'text-left' : 'text-right'} transition-all flex flex-col justify-between gap-2 shadow-2xs ${
             focusedElement === 'radius'
               ? 'bg-orange-500 text-white border-orange-600 shadow-md ring-4 ring-orange-300/40 font-black'
               : 'bg-white/90 border-amber-200/80 text-slate-800 hover:bg-orange-50 hover:border-orange-300'
@@ -344,15 +413,17 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${focusedElement === 'radius' ? 'bg-white/20' : 'bg-orange-100 text-orange-800'}`}>3</span>
           </div>
           <div>
-            <div className="font-black text-xs">نصف القطر</div>
-            <div className={`text-[10px] font-medium ${focusedElement === 'radius' ? 'text-orange-100' : 'text-slate-500'}`}>من المركز إلى الدائرة</div>
+            <div className="font-black text-xs">{isEn ? 'Radius' : 'نِصْفُ الْقُطْرِ'}</div>
+            <div className={`text-[10px] font-medium ${focusedElement === 'radius' ? 'text-orange-100' : 'text-slate-500'}`}>
+              {isEn ? 'Center to edge' : 'مِنَ الْمَرْكَزِ إِلَى الدَّائِرَةِ'}
+            </div>
           </div>
         </button>
 
         {/* 4. الوتر */}
         <button
           onClick={() => applyPreset('chord')}
-          className={`p-3.5 rounded-2xl border text-right transition-all flex flex-col justify-between gap-2 shadow-2xs ${
+          className={`p-3.5 rounded-2xl border ${isEn ? 'text-left' : 'text-right'} transition-all flex flex-col justify-between gap-2 shadow-2xs ${
             focusedElement === 'chord'
               ? 'bg-purple-600 text-white border-purple-700 shadow-md ring-4 ring-purple-300/40 font-black'
               : 'bg-white/90 border-amber-200/80 text-slate-800 hover:bg-purple-50 hover:border-purple-300'
@@ -363,15 +434,17 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${focusedElement === 'chord' ? 'bg-white/20' : 'bg-purple-100 text-purple-800'}`}>4</span>
           </div>
           <div>
-            <div className="font-black text-xs">الوتر</div>
-            <div className={`text-[10px] font-medium ${focusedElement === 'chord' ? 'text-purple-100' : 'text-slate-500'}`}>يصل بين نقطتين</div>
+            <div className="font-black text-xs">{isEn ? 'Chord' : 'الْوَتَرُ'}</div>
+            <div className={`text-[10px] font-medium ${focusedElement === 'chord' ? 'text-purple-100' : 'text-slate-500'}`}>
+              {isEn ? 'Joins 2 rim points' : 'يَصِلُ بَيْنَ نُقْطَتَيْنِ'}
+            </div>
           </div>
         </button>
 
         {/* 5. القطر */}
         <button
           onClick={() => applyPreset('diameter')}
-          className={`p-3.5 rounded-2xl border text-right transition-all flex flex-col justify-between gap-2 shadow-2xs ${
+          className={`p-3.5 rounded-2xl border ${isEn ? 'text-left' : 'text-right'} transition-all flex flex-col justify-between gap-2 shadow-2xs ${
             focusedElement === 'diameter'
               ? 'bg-blue-600 text-white border-blue-700 shadow-md ring-4 ring-blue-300/40 font-black'
               : 'bg-white/90 border-amber-200/80 text-slate-800 hover:bg-blue-50 hover:border-blue-300'
@@ -382,15 +455,17 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${focusedElement === 'diameter' ? 'bg-white/20' : 'bg-blue-100 text-blue-800'}`}>5</span>
           </div>
           <div>
-            <div className="font-black text-xs">القطر</div>
-            <div className={`text-[10px] font-medium ${focusedElement === 'diameter' ? 'text-blue-100' : 'text-slate-500'}`}>يمر بالمركز (2 × نصف القطر)</div>
+            <div className="font-black text-xs">{isEn ? 'Diameter' : 'الْقُطْرُ'}</div>
+            <div className={`text-[10px] font-medium ${focusedElement === 'diameter' ? 'text-blue-100' : 'text-slate-500'}`}>
+              {isEn ? 'Through center (2 × r)' : 'يَمُرُّ بِالْمَرْكَزِ (2 × نِصْفِ الْقُطْرِ)'}
+            </div>
           </div>
         </button>
 
         {/* 6. القرص */}
         <button
           onClick={() => applyPreset('disc')}
-          className={`p-3.5 rounded-2xl border text-right transition-all flex flex-col justify-between gap-2 shadow-2xs ${
+          className={`p-3.5 rounded-2xl border ${isEn ? 'text-left' : 'text-right'} transition-all flex flex-col justify-between gap-2 shadow-2xs ${
             focusedElement === 'disc'
               ? 'bg-teal-600 text-white border-teal-700 shadow-md ring-4 ring-teal-300/40 font-black'
               : 'bg-white/90 border-amber-200/80 text-slate-800 hover:bg-teal-50 hover:border-teal-300'
@@ -401,8 +476,10 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${focusedElement === 'disc' ? 'bg-white/20' : 'bg-teal-100 text-teal-800'}`}>6</span>
           </div>
           <div>
-            <div className="font-black text-xs">القرص</div>
-            <div className={`text-[10px] font-medium ${focusedElement === 'disc' ? 'text-teal-100' : 'text-slate-500'}`}>المساحة الممتلئة</div>
+            <div className="font-black text-xs">{isEn ? 'Disc' : 'الْقُرْصُ'}</div>
+            <div className={`text-[10px] font-medium ${focusedElement === 'disc' ? 'text-teal-100' : 'text-slate-500'}`}>
+              {isEn ? 'Filled area' : 'الْمِسَاحَةُ الْمُمْتَلِئَةُ'}
+            </div>
           </div>
         </button>
       </div>
@@ -414,14 +491,18 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
           <div className="w-full flex items-center justify-between pb-3.5 border-b border-amber-100 text-xs font-bold text-slate-700">
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-xs shadow-emerald-300"></span>
-              <span className="font-black text-slate-800">الرسم الهندسي المباشر (مقياس 1 سم على الشاشة)</span>
+              <span className="font-black text-slate-800">
+                {isEn ? 'Live Geometric Drawing (1 cm on screen scale)' : 'الرَّسْمُ الْهَنْدَسِيُّ الْمُبَاشِرُ (مِقْيَاسُ 1 سَم عَلَى الشَّاشَةِ)'}
+              </span>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
               <span className="bg-amber-100/70 border border-amber-300/80 text-amber-950 px-3 py-1 rounded-xl font-black">
-                نصف القطر: <strong className="text-amber-800 font-black">{radiusCm} سم</strong>
+                {isEn ? 'Radius: ' : 'نِصْفُ الْقُطْرِ: '}
+                <strong className="text-amber-800 font-black">{radiusCm} {isEn ? 'cm' : 'سَم'}</strong>
               </span>
               <span className="bg-blue-100/70 border border-blue-300/80 text-blue-950 px-3 py-1 rounded-xl font-black">
-                القطر: <strong className="text-blue-800 font-black">{diameterCm} سم</strong>
+                {isEn ? 'Diameter: ' : 'الْقُطْرُ: '}
+                <strong className="text-blue-800 font-black">{diameterCm} {isEn ? 'cm' : 'سَم'}</strong>
               </span>
             </div>
           </div>
@@ -477,7 +558,7 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
                     fontWeight="black"
                     className="select-none"
                   >
-                    مساحة القرص (ممتلئة)
+                    {isEn ? 'Disc Area (Filled)' : 'مِسَاحَةُ الْقُرْصِ (مُمْتَلِئَةٌ)'}
                   </text>
                 </g>
               )}
@@ -504,7 +585,7 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
                 fontWeight="black"
                 className="select-none"
               >
-                الدائرة (المحيط)
+                {isEn ? 'Circle (Boundary)' : 'الدَّائِرَةُ (الْمُحِيطُ)'}
               </text>
 
               {/* Multiple Radii demonstration (Shows that all radii are equal in every direction) */}
@@ -535,7 +616,7 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
                     fontSize="12"
                     fontWeight="black"
                   >
-                    كل أنصاف الأقطار متقايسة = {radiusCm} سم
+                    {isEn ? `All Radii are equal = ${radiusCm} cm` : `كُلُّ أَنْصَافِ الْأَقْطَارِ مُتَقَايِسَةٌ = ${radiusCm} سَم`}
                   </text>
                 </g>
               )}
@@ -559,9 +640,9 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
 
                   {/* Label on the diameter */}
                   <rect
-                    x={(diamPoint1.x + diamPoint2.x) / 2 - 48}
+                    x={(diamPoint1.x + diamPoint2.x) / 2 - (isEn ? 56 : 52)}
                     y={(diamPoint1.y + diamPoint2.y) / 2 - 28}
-                    width="96"
+                    width={isEn ? "112" : "104"}
                     height="22"
                     rx="8"
                     fill="#eff6ff"
@@ -577,7 +658,7 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
                     fontWeight="black"
                     className="select-none"
                   >
-                    القطر = {diameterCm} سم
+                    {isEn ? `Diameter = ${diameterCm} cm` : `الْقُطْرُ = ${diameterCm} سَم`}
                   </text>
                 </g>
               )}
@@ -622,9 +703,9 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
 
                   {/* Chord label */}
                   <rect
-                    x={(chordPoint1.x + chordPoint2.x) / 2 - 48}
+                    x={(chordPoint1.x + chordPoint2.x) / 2 - (isEn ? 52 : 50)}
                     y={(chordPoint1.y + chordPoint2.y) / 2 + 10}
-                    width="96"
+                    width={isEn ? "104" : "100"}
                     height="22"
                     rx="8"
                     fill="#faf5ff"
@@ -640,7 +721,7 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
                     fontWeight="black"
                     className="select-none"
                   >
-                    الوتر = {chordLengthCm} سم
+                    {isEn ? `Chord = ${chordLengthCm} cm` : `الْوَتَرُ = ${chordLengthCm} سَم`}
                   </text>
                 </g>
               )}
@@ -688,9 +769,9 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
 
                   {/* Radius label badge */}
                   <rect
-                    x={(centerCoord.x + radiusPoint.x) / 2 - 50}
+                    x={(centerCoord.x + radiusPoint.x) / 2 - (isEn ? 54 : 54)}
                     y={(centerCoord.y + radiusPoint.y) / 2 - 26}
-                    width="100"
+                    width={isEn ? "108" : "108"}
                     height="22"
                     rx="8"
                     fill="#fffbeb"
@@ -706,7 +787,7 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
                     fontWeight="black"
                     className="select-none"
                   >
-                    نصف القطر = {radiusCm} سم
+                    {isEn ? `Radius = ${radiusCm} cm` : `نِصْفُ الْقُطْرِ = ${radiusCm} سَم`}
                   </text>
                 </g>
               )}
@@ -724,9 +805,9 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
                   
                   {/* Center label */}
                   <rect
-                    x={centerCoord.x - 32}
+                    x={centerCoord.x - (isEn ? 36 : 36)}
                     y={centerCoord.y - 34}
-                    width="64"
+                    width={isEn ? "72" : "72"}
                     height="20"
                     rx="6"
                     fill="#fff1f2"
@@ -742,7 +823,7 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
                     fontWeight="black"
                     className="select-none"
                   >
-                    المركز
+                    {isEn ? 'Center' : 'الْمَرْكَزُ'}
                   </text>
                 </g>
               )}
@@ -760,7 +841,7 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
                       <g key={cmIdx}>
                         <line x1={xPos} y1="0" x2={xPos} y2="12" stroke="#854d0e" strokeWidth="1.5" />
                         <text x={xPos + 2} y="20" fill="#854d0e" fontSize="9" fontWeight="bold">
-                          {cmIdx} سم
+                          {cmIdx} {isEn ? 'cm' : 'سَم'}
                         </text>
                         {/* Half cm tick */}
                         {cmIdx < 13 && (
@@ -779,7 +860,8 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
             <div className="flex items-center gap-2">
               <MoveHorizontal className="w-4 h-4 text-emerald-600 shrink-0" />
               <span>
-                <strong className="text-emerald-900">طريقة التفاعل:</strong> المس النقاط الملونة واسحبها حول الدائرة لترى الحركة الحية!
+                <strong className="text-emerald-900">{isEn ? 'Interactive Tip:' : 'طَرِيقَةُ التَّفَاعُلِ:'}</strong>{' '}
+                {isEn ? 'Touch and drag colored points around the circle to explore live geometry!' : 'اِلْمِسِ النِّقَاطَ الْمُلَوَّنَةَ وَاسْحَبْهَا حَوْلَ الدَّائِرَةِ لِتَرَى الْحَرَكَةَ الْحَيَّةَ!'}
               </span>
             </div>
             <button
@@ -788,203 +870,114 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
                 showMultipleRadii ? 'bg-amber-500 text-slate-950 shadow-xs ring-2 ring-amber-300' : 'bg-white border border-amber-300/80 text-amber-900 hover:bg-amber-100/70'
               }`}
             >
-              {showMultipleRadii ? 'إخفاء بقية الأقطار' : 'إثبات: كل الأقطار متقايسة'}
+              {showMultipleRadii 
+                ? (isEn ? 'Hide Extra Radii' : 'إِخْفَاءُ بَقِيَّةِ الْأَقْطَارِ')
+                : (isEn ? 'Proof: All Radii Equal' : 'إِثْبَاتٌ: كُلُّ الْأَقْطَارِ مُتَقَايِسَةٌ')}
             </button>
           </div>
         </div>
 
         {/* Right: Controls & Pedagogical Explanations */}
         <div className="lg:col-span-5 space-y-4">
-          {/* Element Switches (Color coded) */}
-          <div className="bg-white p-5 sm:p-6 rounded-3xl border border-amber-200/80 shadow-md shadow-amber-500/5 space-y-4">
-            <div className="flex items-center justify-between border-b border-amber-100 pb-3">
-              <h3 className="font-black text-slate-900 text-sm flex items-center gap-2">
-                <CircleDot className="w-4 h-4 text-emerald-600" />
-                <span>عناصر الدائرة (تحكم بالإظهار والإخفاء)</span>
-              </h3>
-              <span className="text-xs text-amber-800 bg-amber-100/60 px-2 py-0.5 rounded-md font-bold">اضغط للمشاهدة</span>
+          {/* Slider to change Radius Length & Compass Opening */}
+          <div className="bg-white p-4 sm:p-5 rounded-3xl border border-amber-200/80 shadow-md shadow-amber-500/5 space-y-2.5">
+            <div className="flex items-center justify-between text-xs font-bold">
+              <span className="text-slate-800 flex items-center gap-1.5 font-black">
+                <Compass className="w-4 h-4 text-emerald-600" />
+                {isEn ? 'Compass Opening (Radius Length):' : 'تَغْيِيرُ فَتْحَةِ الْمِدْوَرِ (طُولُ نِصْفِ الْقُطْرِ):'}
+              </span>
+              <span className="text-emerald-900 bg-emerald-100/90 px-3 py-0.5 rounded-full border border-emerald-300 font-black text-xs">
+                {radiusCm} {isEn ? 'cm' : 'سَنْتِمِتْراً'}
+              </span>
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {/* Center toggle */}
-              <button
-                id="toggle-center-btn"
-                onClick={() => {
-                  setShowCenter(!showCenter);
-                  setFocusedElement('center');
-                }}
-                className={`p-3 rounded-2xl border text-right flex items-center justify-between transition-all ${
-                  showCenter
-                    ? 'bg-rose-50 border-rose-300 text-rose-950 ring-2 ring-rose-200 shadow-xs'
-                    : 'bg-amber-50/40 border-amber-200/50 text-slate-600 hover:bg-amber-100/50'
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <span className="w-3.5 h-3.5 rounded-full bg-rose-500 shrink-0 shadow-xs shadow-rose-300"></span>
-                  <div>
-                    <div className="font-black text-xs">المركز</div>
-                    <div className="text-[10px] text-slate-500">نقطة الوسط الثابتة</div>
-                  </div>
-                </div>
-                {showCenter ? <Eye className="w-4 h-4 text-rose-600" /> : <EyeOff className="w-4 h-4 text-slate-400" />}
-              </button>
-
-              {/* Radius toggle */}
-              <button
-                id="toggle-radius-btn"
-                onClick={() => {
-                  setShowRadius(!showRadius);
-                  setFocusedElement('radius');
-                }}
-                className={`p-3 rounded-2xl border text-right flex items-center justify-between transition-all ${
-                  showRadius
-                    ? 'bg-orange-50 border-orange-300 text-orange-950 ring-2 ring-orange-200 shadow-xs'
-                    : 'bg-amber-50/40 border-amber-200/50 text-slate-600 hover:bg-amber-100/50'
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <span className="w-3.5 h-3.5 rounded-full bg-orange-500 shrink-0 shadow-xs shadow-orange-300"></span>
-                  <div>
-                    <div className="font-black text-xs">نصف القطر</div>
-                    <div className="text-[10px] text-slate-500">من المركز إلى الدائرة</div>
-                  </div>
-                </div>
-                {showRadius ? <Eye className="w-4 h-4 text-orange-600" /> : <EyeOff className="w-4 h-4 text-slate-400" />}
-              </button>
-
-              {/* Diameter toggle */}
-              <button
-                id="toggle-diameter-btn"
-                onClick={() => {
-                  setShowDiameter(!showDiameter);
-                  setFocusedElement('diameter');
-                }}
-                className={`p-3 rounded-2xl border text-right flex items-center justify-between transition-all ${
-                  showDiameter
-                    ? 'bg-blue-50 border-blue-300 text-blue-950 ring-2 ring-blue-200 shadow-xs'
-                    : 'bg-amber-50/40 border-amber-200/50 text-slate-600 hover:bg-amber-100/50'
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <span className="w-3.5 h-3.5 rounded-full bg-blue-500 shrink-0 shadow-xs shadow-blue-300"></span>
-                  <div>
-                    <div className="font-black text-xs">القطر</div>
-                    <div className="text-[10px] text-slate-500">يمر بالمركز = 2 × نصف القطر</div>
-                  </div>
-                </div>
-                {showDiameter ? <Eye className="w-4 h-4 text-blue-600" /> : <EyeOff className="w-4 h-4 text-slate-400" />}
-              </button>
-
-              {/* Chord toggle */}
-              <button
-                id="toggle-chord-btn"
-                onClick={() => {
-                  setShowChord(!showChord);
-                  setFocusedElement('chord');
-                }}
-                className={`p-3 rounded-2xl border text-right flex items-center justify-between transition-all ${
-                  showChord
-                    ? 'bg-purple-50 border-purple-300 text-purple-950 ring-2 ring-purple-200 shadow-xs'
-                    : 'bg-amber-50/40 border-amber-200/50 text-slate-600 hover:bg-amber-100/50'
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <span className="w-3.5 h-3.5 rounded-full bg-purple-500 shrink-0 shadow-xs shadow-purple-300"></span>
-                  <div>
-                    <div className="font-black text-xs">الوتر</div>
-                    <div className="text-[10px] text-slate-500">يصل بين نقطتين</div>
-                  </div>
-                </div>
-                {showChord ? <Eye className="w-4 h-4 text-purple-600" /> : <EyeOff className="w-4 h-4 text-slate-400" />}
-              </button>
-            </div>
-
-            {/* Extra toggles: Disc & Ruler */}
-            <div className="pt-2 flex items-center gap-2 border-t border-amber-100">
-              <button
-                id="toggle-disc-btn"
-                onClick={() => {
-                  setShowDisc(!showDisc);
-                  setFocusedElement('disc');
-                }}
-                className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-black border transition-all flex items-center justify-center gap-1.5 ${
-                  showDisc
-                    ? 'bg-emerald-100 border-emerald-400 text-emerald-950 shadow-xs ring-2 ring-emerald-200'
-                    : 'bg-amber-50/50 border-amber-200/60 text-slate-700 hover:bg-amber-100/50'
-                }`}
-              >
-                <span>{showDisc ? 'إلغاء تلوين القرص' : 'تلوين مساحة القرص'}</span>
-              </button>
-
-              <button
-                id="toggle-ruler-btn"
-                onClick={() => setShowRuler(!showRuler)}
-                className={`py-2.5 px-3.5 rounded-xl text-xs font-black border transition-all flex items-center gap-1.5 ${
-                  showRuler
-                    ? 'bg-amber-300 border-amber-500 text-amber-950 shadow-xs ring-2 ring-amber-200'
-                    : 'bg-amber-50/50 border-amber-200/60 text-slate-700 hover:bg-amber-100/50'
-                }`}
-              >
-                <Ruler className="w-3.5 h-3.5" />
-                <span>المسطرة</span>
-              </button>
-            </div>
-
-            {/* Slider to change Radius Length */}
-            <div className="pt-3 border-t border-amber-100 space-y-2">
-              <div className="flex items-center justify-between text-xs font-bold">
-                <span className="text-slate-800">تَغْيِيرُ فَتْحَةِ الْمِدْوَرِ (طُولُ نِصْفِ الْقُطْرِ):</span>
-                <span className="text-emerald-800 bg-emerald-100/80 px-3 py-0.5 rounded-full border border-emerald-300 font-black">
-                  {radiusCm} سَنْتِمِتْراً
-                </span>
-              </div>
-              <input
-                id="radius-slider"
-                type="range"
-                min="2"
-                max="6"
-                step="1"
-                value={radiusCm}
-                onChange={(e) => setRadiusCm(Number(e.target.value))}
-                className="w-full accent-emerald-600 cursor-pointer h-2.5 bg-amber-100 rounded-lg"
-              />
-              <div className="flex justify-between text-[10px] font-black text-amber-900/60">
-                <span>2 سَنْتِمِتْراً (صَغِيرَةٌ)</span>
-                <span>3 سَنْتِمِتْراً</span>
-                <span>4 سَنْتِمِتْراً (مُتَوَسِّطَةٌ)</span>
-                <span>5 سَنْتِمِتْراً</span>
-                <span>6 سَنْتِمِتْراً (كَبِيرَةٌ)</span>
-              </div>
+            <input
+              id="radius-slider"
+              type="range"
+              min="2"
+              max="6"
+              step="1"
+              value={radiusCm}
+              onChange={(e) => setRadiusCm(Number(e.target.value))}
+              className="w-full accent-emerald-600 cursor-pointer h-2.5 bg-amber-100 rounded-lg"
+            />
+            <div className="flex justify-between text-[10px] font-black text-amber-900/70">
+              <span>{isEn ? '2 cm (Small)' : '2 سَنْتِمِتْراً (صَغِيرَةٌ)'}</span>
+              <span>{isEn ? '3 cm' : '3 سَنْتِمِتْرَاتٍ'}</span>
+              <span>{isEn ? '4 cm (Medium)' : '4 سَنْتِمِتْرَاتٍ (مُتَوَسِّطَةٌ)'}</span>
+              <span>{isEn ? '5 cm' : '5 سَنْتِمِتْرَاتٍ'}</span>
+              <span>{isEn ? '6 cm (Large)' : '6 سَنْتِمِتْرَاتٍ (كَبِيرَةٌ)'}</span>
             </div>
           </div>
 
           {/* Dynamic Pedagogical Explanation Box */}
           <div className={`p-5 rounded-3xl border ${explanation.color} shadow-md shadow-amber-500/5 space-y-3 transition-all`}>
-            <div className="flex items-start justify-between">
+            <div className="flex items-start justify-between gap-2 flex-wrap">
               <div>
                 <span className="text-[11px] font-black px-2.5 py-0.5 rounded-full bg-white/90 border border-current shadow-2xs">
-                  {explanation.badge}
+                  {language === 'en' ? explanation.badgeEn : explanation.badge}
                 </span>
-                <h4 className="text-base font-black mt-1.5">{explanation.title}</h4>
+                <h4 className="text-base font-black mt-1.5">
+                  {language === 'en' ? explanation.titleEn : explanation.title}
+                </h4>
+                {language === 'bilingual' && explanation.titleEn && (
+                  <div className="text-xs font-bold text-blue-800">
+                    🇺🇸 {explanation.titleEn}
+                  </div>
+                )}
               </div>
-              <button
-                id="speak-active-explanation-btn"
-                onClick={handleSpeakActive}
-                className="p-2 rounded-xl bg-white/90 hover:bg-white text-slate-800 shadow-xs border border-white/60 transition-colors flex items-center gap-1.5 text-xs font-black"
-                title="اِسْتَمِعْ لِلشَّرْحِ بِالصَّوْتِ"
-              >
-                <Volume2 className="w-4 h-4 text-emerald-600" />
-                <span>اِسْتَمِعْ</span>
-              </button>
+
+              {/* Audio reading buttons */}
+              <div className="flex items-center gap-1.5">
+                {language !== 'en' && (
+                  <button
+                    id="speak-active-arabic-btn"
+                    onClick={handleSpeakArabic}
+                    className="p-2 rounded-xl bg-white/90 hover:bg-white text-slate-800 shadow-xs border border-white/60 transition-colors flex items-center gap-1 text-xs font-black"
+                    title="اِسْتَمِعْ لِلشَّرْحِ بِالْعَرَبِيَّةِ الْمَشْكُولَةِ"
+                  >
+                    <Volume2 className="w-4 h-4 text-emerald-600" />
+                    <span>عَرَبِيٌّ</span>
+                  </button>
+                )}
+
+                {language !== 'ar' && (
+                  <button
+                    id="speak-active-english-btn"
+                    onClick={handleSpeakEnglish}
+                    className="p-2 rounded-xl bg-blue-100 hover:bg-blue-200 text-blue-950 shadow-xs border border-blue-300 transition-colors flex items-center gap-1 text-xs font-black"
+                    title="Listen to explanation in slow American English for 8-year-old pupils"
+                  >
+                    <span>🇺🇸</span>
+                    <span>English</span>
+                  </button>
+                )}
+              </div>
             </div>
 
-            <p className="text-xs sm:text-sm font-medium leading-relaxed">
-              {explanation.text}
-            </p>
+            {/* Arabic and English explanation paragraphs */}
+            {language !== 'en' && (
+              <p className="text-xs sm:text-sm font-medium leading-relaxed">
+                {explanation.text}
+              </p>
+            )}
+
+            {(language === 'en' || language === 'bilingual') && explanation.textEn && (
+              <p className={`text-xs sm:text-sm font-medium leading-relaxed text-slate-800 ${language === 'bilingual' ? 'pt-2 border-t border-amber-200/60' : ''}`}>
+                {language === 'bilingual' && <strong className="text-blue-800">🇺🇸 English: </strong>}
+                {explanation.textEn}
+              </p>
+            )}
 
             <div className="p-3 bg-white/90 rounded-2xl border border-white/80 text-xs font-bold flex items-start gap-2 shadow-2xs">
               <Sparkles className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-              <span>{explanation.tip}</span>
+              <div>
+                {language !== 'en' && <span>{explanation.tip}</span>}
+                {(language === 'en' || language === 'bilingual') && explanation.tipEn && (
+                  <div className={`text-slate-700 ${language === 'bilingual' ? 'mt-1 text-[11px] italic' : ''}`}>
+                    {explanation.tipEn}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -992,14 +985,24 @@ export const InteractiveCircleExplorer: React.FC<InteractiveCircleExplorerProps>
           <div className="bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-amber-500/20 border border-amber-400/60 p-5 rounded-3xl text-slate-900 space-y-2.5 shadow-sm">
             <h5 className="text-xs font-black text-amber-950 flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-amber-800" />
-              <span>قَاعِدَةٌ ذَهَبِيَّةٌ يَحْفَظُهَا تِلْمِيذُ الِابْتِدَائِيِّ:</span>
+              <span>
+                {isEn ? 'Golden Math Rule for Primary Pupils:' : 'قَاعِدَةٌ ذَهَبِيَّةٌ يَحْفَظُهَا تِلْمِيذُ الِابْتِدَائِيِّ:'}
+              </span>
             </h5>
             <div className="bg-white/95 p-3.5 rounded-2xl border border-amber-300 text-center space-y-1 shadow-xs">
               <div className="text-sm md:text-base font-black text-amber-950">
-                طُولُ الْقُطْرِ = نِصْفُ الْقُطْرِ + نِصْفُ الْقُطْرِ
+                {isEn ? 'Diameter Length = Radius + Radius (2 × Radius)' : 'طُولُ الْقُطْرِ = نِصْفُ الْقُطْرِ + نِصْفُ الْقُطْرِ'}
               </div>
               <div className="text-xs text-slate-700 font-medium">
-                (إِذَا كَانَ نِصْفُ الْقُطْرِ <strong className="text-amber-800 font-black">{radiusCm} سَنْتِمِتْراً</strong>، فَإِنَّ الْقُطْرَ يُسَاوِي <strong className="text-blue-800 font-black">{diameterCm} سَنْتِمِتْراً</strong>)
+                {isEn ? (
+                  <span>
+                    (If Radius is <strong className="text-amber-800 font-black">{radiusCm} cm</strong>, then Diameter is <strong className="text-blue-800 font-black">{diameterCm} cm</strong>)
+                  </span>
+                ) : (
+                  <span>
+                    (إِذَا كَانَ نِصْفُ الْقُطْرِ <strong className="text-amber-800 font-black">{radiusCm} سَنْتِمِتْراً</strong>، فَإِنَّ الْقُطْرَ يُسَاوِي <strong className="text-blue-800 font-black">{diameterCm} سَنْتِمِتْراً</strong>)
+                  </span>
+                )}
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { QUIZ_QUESTIONS, CHALLENGE_PUZZLES } from '../data/circleCurriculum';
 import { ChallengeVisualDiagram } from './ChallengeVisualDiagram';
-import { QuizLevelMode } from '../types';
+import { QuizLevelMode, AppLanguage } from '../types';
 import { 
   Award, 
   CheckCircle2, 
@@ -17,16 +17,21 @@ import {
   Flame,
   BookOpen,
   Brain,
-  Lightbulb
+  Lightbulb,
+  Globe
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { speakArabicText } from '../utils/speech';
+import { speakArabicText, speakEnglishText } from '../utils/speech';
 
 interface InteractiveQuizProps {
   soundEnabled: boolean;
+  language?: AppLanguage;
 }
 
-export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ soundEnabled }) => {
+export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ 
+  soundEnabled,
+  language = 'bilingual'
+}) => {
   const [quizLevel, setQuizLevel] = useState<QuizLevelMode>('challenge');
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -52,10 +57,18 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ soundEnabled }
     setQuizFinished(false);
 
     if (soundEnabled) {
-      if (level === 'challenge') {
-        speakArabicText('مَرْحَباً بِكَ فِي مُسْتَوَى التَّحَدِّي وَالْأَلْغَازِ الْهَنْدَسِيَّةِ الْبَصَرِيَّةِ!');
+      if (language === 'en') {
+        if (level === 'challenge') {
+          speakEnglishText('Welcome to the geometric visual challenge and puzzles level!');
+        } else {
+          speakEnglishText('Welcome to the circle concepts quiz!');
+        }
       } else {
-        speakArabicText('مَرْحَباً بِكَ فِي اخْتِبَارِ الْمُكْتَسَبَاتِ الْأَسَاسِيَّةِ فِي هَنْدَسَةِ الدَّائِرَةِ.');
+        if (level === 'challenge') {
+          speakArabicText('مَرْحَباً بِكَ فِي مُسْتَوَى التَّحَدِّي وَالْأَلْغَازِ الْهَنْدَسِيَّةِ الْبَصَرِيَّةِ!');
+        } else {
+          speakArabicText('مَرْحَباً بِكَ فِي اخْتِبَارِ الْمُكْتَسَبَاتِ الْأَسَاسِيَّةِ فِي هَنْدَسَةِ الدَّائِرَةِ.');
+        }
       }
     }
   };
@@ -74,11 +87,19 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ soundEnabled }
         origin: { y: 0.7 }
       });
       if (soundEnabled) {
-        speakArabicText('أَحْسَنْتَ! إِجَابَةٌ صَحِيحَةٌ وَمُتْقَنَةٌ. ' + currentItem.explanation);
+        if (language === 'en') {
+          speakEnglishText('Great job! Correct answer. ' + (currentItem.explanationEn || currentItem.explanation));
+        } else {
+          speakArabicText('أَحْسَنْتَ! إِجَابَةٌ صَحِيحَةٌ وَمُتْقَنَةٌ. ' + currentItem.explanation);
+        }
       }
     } else {
       if (soundEnabled) {
-        speakArabicText('حَاوِلْ مَرَّةً أُخْرَى فِي السُّؤَالِ الْقَادِمِ. ' + currentItem.explanation);
+        if (language === 'en') {
+          speakEnglishText('Try again in the next question. ' + (currentItem.explanationEn || currentItem.explanation));
+        } else {
+          speakArabicText('حَاوِلْ مَرَّةً أُخْرَى فِي السُّؤَالِ الْقَادِمِ. ' + currentItem.explanation);
+        }
       }
     }
   };
@@ -92,7 +113,11 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ soundEnabled }
       setShowHint(false);
       if (soundEnabled) {
         const nextItem = quizLevel === 'standard' ? QUIZ_QUESTIONS[nextIdx] : CHALLENGE_PUZZLES[nextIdx];
-        speakArabicText(nextItem.question);
+        if (language === 'en') {
+          speakEnglishText(nextItem.questionEn || nextItem.question);
+        } else {
+          speakArabicText(nextItem.question);
+        }
       }
     } else {
       setQuizFinished(true);
@@ -103,7 +128,11 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ soundEnabled }
       });
       if (soundEnabled) {
         const finalScore = score + (selectedOption === currentItem.correctIndex ? 1 : 0);
-        speakArabicText(`تَهَانِينَا يَا بَطَلَ الْهَنْدَسَةِ! لَقَدْ أَنْهَيْتَ التَّحَدِّيَ بِنَجَاحٍ وَحَصَلْتَ عَلَى ${finalScore} مِنْ أَصْلِ ${totalQuestions}.`);
+        if (language === 'en') {
+          speakEnglishText(`Congratulations geometry champion! You completed the challenge with ${finalScore} out of ${totalQuestions}.`);
+        } else {
+          speakArabicText(`تَهَانِينَا يَا بَطَلَ الْهَنْدَسَةِ! لَقَدْ أَنْهَيْتَ التَّحَدِّيَ بِنَجَاحٍ وَحَصَلْتَ عَلَى ${finalScore} مِنْ أَصْلِ ${totalQuestions}.`);
+        }
       }
     }
   };
@@ -121,11 +150,19 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ soundEnabled }
     window.print();
   };
 
-  const handleSpeakCurrent = () => {
+  const handleSpeakArabic = () => {
     if (quizLevel === 'challenge' && currentChallengeP) {
       speakArabicText(`${currentChallengeP.title}. ${currentChallengeP.story}. ${currentChallengeP.question}`);
     } else if (currentStandardQ) {
       speakArabicText(currentStandardQ.question);
+    }
+  };
+
+  const handleSpeakEnglish = () => {
+    if (quizLevel === 'challenge' && currentChallengeP) {
+      speakEnglishText(`${currentChallengeP.titleEn || currentChallengeP.title}. ${currentChallengeP.storyEn || currentChallengeP.story}. ${currentChallengeP.questionEn || currentChallengeP.question}`);
+    } else if (currentStandardQ) {
+      speakEnglishText(currentStandardQ.questionEn || currentStandardQ.question);
     }
   };
 
@@ -143,15 +180,25 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ soundEnabled }
           </div>
           <div>
             <h2 className="font-black text-lg md:text-xl text-white flex items-center gap-2">
-              <span>{quizLevel === 'challenge' ? 'مُسْتَوَى التَّحَدِّي: أَلْغَازُ الْعَبَاقِرَةِ' : 'تَحَدِّي بَطَلِ الْهَنْدَسَةِ (الْمُكْتَسَبَاتُ)'}</span>
+              <span>
+                {quizLevel === 'challenge'
+                  ? (language === 'en' ? 'Challenge Level: Genius Puzzles' : 'مُسْتَوَى التَّحَدِّي: أَلْغَازُ الْعَبَاقِرَةِ')
+                  : (language === 'en' ? 'Geometry Champion: Core Quiz' : 'تَحَدِّي بَطَلِ الْهَنْدَسَةِ (الْمُكْتَسَبَاتُ)')}
+              </span>
               <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black shadow-xs">
-                {quizLevel === 'challenge' ? 'ألغاز بصرية تفاعلية' : 'أسئلة أساسية'}
+                {quizLevel === 'challenge'
+                  ? (language === 'en' ? 'Interactive Visual Puzzles' : 'أَلْغَازٌ بَصَرِيَّةٌ تَفَاعُلِيَّةٌ')
+                  : (language === 'en' ? 'Core Concepts' : 'أَسْئِلَةٌ أَسَاسِيَّةٌ')}
               </span>
             </h2>
             <p className="text-xs md:text-sm text-teal-100 font-medium mt-0.5">
               {quizLevel === 'challenge' 
-                ? 'استنتج العلاقة بين القطر ونصف القطر عبر ألغاز بصرية هندسية ممتعة ومشوقة' 
-                : 'أسئلة تدريبية مشكولة مصممة وفق تمارين المنهاج الجزائري للسنتين الرابعة والخامسة'}
+                ? (language === 'en'
+                    ? 'Deduce the relationship between diameter and radius through engaging visual geometric puzzles'
+                    : 'اِسْتَنْتِجِ الْعَلَاقَةَ بَيْنَ الْقُطْرِ وَنِصْفِ الْقُطْرِ عَبْرَ أَلْغَازٍ بَصَرِيَّةٍ هَنْدَسِيَّةٍ مُمْتِعَةٍ وَمُشَوِّقَةٍ')
+                : (language === 'en'
+                    ? 'Vocalized training questions designed according to the Algerian 4th & 5th grade curriculum'
+                    : 'أَسْئِلَةٌ تَدْرِيبِيَّةٌ مَشْكُولَةٌ مُصَمَّمَةٌ وَفْقَ تَمَارِينِ الْمِنْهَاجِ الْجَزَائِرِيِّ لِلسَّنَتَيْنِ الرَّابِعَةِ وَالْخَامِسَةِ')}
             </p>
           </div>
         </div>
@@ -169,7 +216,7 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ soundEnabled }
               }`}
             >
               <BookOpen className="w-3.5 h-3.5 text-emerald-600" />
-              <span>الْمُسْتَوَى الْأَسَاسِيُّ</span>
+              <span>{language === 'en' ? 'Core Quiz' : 'الْمُسْتَوَى الْأَسَاسِيُّ'}</span>
             </button>
 
             <button
@@ -181,7 +228,7 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ soundEnabled }
               }`}
             >
               <Flame className="w-3.5 h-3.5 text-amber-950" />
-              <span>مُسْتَوَى التَّحَدِّي ⚡</span>
+              <span>{language === 'en' ? 'Visual Challenges ⚡' : 'مُسْتَوَى التَّحَدِّي ⚡'}</span>
             </button>
           </div>
 
@@ -217,25 +264,47 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ soundEnabled }
                   className="p-2 rounded-2xl bg-amber-100/60 hover:bg-amber-200/70 text-amber-950 border border-amber-200 text-xs font-black flex items-center gap-1.5 transition-colors shadow-2xs"
                 >
                   <HelpCircle className="w-4 h-4 text-amber-700" />
-                  <span>تَلْمِيحٌ مُسَاعِدٌ</span>
+                  <span>{language === 'en' ? 'Hint' : 'تَلْمِيحٌ مُسَاعِدٌ'}</span>
                 </button>
 
-                <button
-                  type="button"
-                  onClick={handleSpeakCurrent}
-                  className="p-2 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 text-xs font-black flex items-center gap-1.5 transition-colors shadow-2xs"
-                >
-                  <Volume2 className="w-4 h-4 text-emerald-600" />
-                  <span>قِرَاءَةٌ صَوْتِيَّةٌ</span>
-                </button>
+                {language !== 'en' && (
+                  <button
+                    type="button"
+                    onClick={handleSpeakArabic}
+                    className="p-2 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 text-xs font-black flex items-center gap-1.5 transition-colors shadow-2xs"
+                    title="قراءة السؤال بالصوت بالعربية المشكولة"
+                  >
+                    <Volume2 className="w-4 h-4 text-emerald-600" />
+                    <span>عربي</span>
+                  </button>
+                )}
+
+                {language !== 'ar' && (
+                  <button
+                    type="button"
+                    onClick={handleSpeakEnglish}
+                    className="p-2 rounded-2xl bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 text-xs font-black flex items-center gap-1.5 transition-colors shadow-2xs"
+                    title="Read question in slow American English"
+                  >
+                    <span>🇺🇸</span>
+                    <span>English</span>
+                  </button>
+                )}
               </div>
             </div>
 
             {/* Hint Box */}
             {showHint && (
-              <div className="p-4 bg-gradient-to-r from-amber-100/80 to-orange-100/60 rounded-2xl border border-amber-300 text-amber-950 text-xs font-bold flex items-start gap-2.5 shadow-2xs animate-fadeIn">
-                <Sparkles className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-                <span>💡 تَلْمِيحٌ ذَكِيٌّ: {currentItem.hint}</span>
+              <div className="p-4 bg-gradient-to-r from-amber-100/80 to-orange-100/60 rounded-2xl border border-amber-300 text-amber-950 text-xs font-bold space-y-1 shadow-2xs animate-fadeIn">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span>💡 {language === 'en' ? 'Smart Hint:' : 'تَلْمِيحٌ ذَكِيٌّ:'} {language !== 'en' ? currentItem.hint : (currentItem.hintEn || currentItem.hint)}</span>
+                </div>
+                {language === 'bilingual' && currentItem.hintEn && (
+                  <div className="text-[11px] text-blue-900 font-medium mr-6">
+                    🇺🇸 {currentItem.hintEn}
+                  </div>
+                )}
               </div>
             )}
 
@@ -244,11 +313,22 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ soundEnabled }
               <div className="p-4 bg-indigo-50/70 rounded-2xl border border-indigo-200/80 space-y-1.5">
                 <div className="flex items-center gap-2 text-indigo-950 font-black text-xs sm:text-sm">
                   <Brain className="w-4 h-4 text-indigo-600" />
-                  <span>{currentChallengeP.title}</span>
+                  <span>{language === 'en' ? (currentChallengeP.titleEn || currentChallengeP.title) : currentChallengeP.title}</span>
+                  {language === 'bilingual' && currentChallengeP.titleEn && (
+                    <span className="text-xs font-bold text-indigo-600">({currentChallengeP.titleEn})</span>
+                  )}
                 </div>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
-                  {currentChallengeP.story}
-                </p>
+                {language !== 'en' && (
+                  <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+                    {currentChallengeP.story}
+                  </p>
+                )}
+                {(language === 'en' || language === 'bilingual') && currentChallengeP.storyEn && (
+                  <p className={`text-xs sm:text-sm text-slate-800 leading-relaxed font-medium ${language === 'bilingual' ? 'pt-1 border-t border-indigo-100 text-indigo-900' : ''}`}>
+                    {language === 'bilingual' && <strong className="text-indigo-700">🇺🇸 </strong>}
+                    {currentChallengeP.storyEn}
+                  </p>
+                )}
               </div>
             )}
 
@@ -259,9 +339,17 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ soundEnabled }
 
             {/* Question Text */}
             <div className="space-y-2 pt-1">
-              <h3 className="text-base sm:text-lg font-black text-slate-900 leading-relaxed">
-                {currentItem.question}
-              </h3>
+              {language !== 'en' && (
+                <h3 className="text-base sm:text-lg font-black text-slate-900 leading-relaxed">
+                  {currentItem.question}
+                </h3>
+              )}
+              {(language === 'en' || language === 'bilingual') && currentItem.questionEn && (
+                <h3 className={`text-sm sm:text-base font-bold text-blue-950 leading-relaxed ${language === 'bilingual' ? 'text-indigo-800' : ''}`}>
+                  {language === 'bilingual' && <span className="font-black text-blue-700">🇺🇸 English: </span>}
+                  {currentItem.questionEn}
+                </h3>
+              )}
             </div>
 
             {/* Options Buttons */}
@@ -279,6 +367,8 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ soundEnabled }
                   }
                 }
 
+                const optionEn = currentItem.optionsEn ? currentItem.optionsEn[idx] : undefined;
+
                 return (
                   <button
                     key={idx}
@@ -287,7 +377,14 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ soundEnabled }
                     onClick={() => handleSelectOption(idx)}
                     className={`p-4 rounded-2xl border text-right font-black text-xs sm:text-sm transition-all flex items-center justify-between gap-3 shadow-2xs ${btnStyle}`}
                   >
-                    <span>{option}</span>
+                    <div className="flex flex-col text-right">
+                      {language !== 'en' && <span>{option}</span>}
+                      {(language === 'en' || language === 'bilingual') && optionEn && (
+                        <span className={`font-bold ${language === 'bilingual' ? 'text-[11px] text-blue-800' : 'text-xs sm:text-sm'}`}>
+                          {language === 'bilingual' ? `🇺🇸 ${optionEn}` : optionEn}
+                        </span>
+                      )}
+                    </div>
                     {isAnswered && idx === currentItem.correctIndex && (
                       <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
                     )}
@@ -312,18 +409,30 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ soundEnabled }
                   {selectedOption === currentItem.correctIndex ? (
                     <>
                       <ThumbsUp className="w-5 h-5 text-emerald-600" />
-                      <strong className="text-sm font-black text-emerald-900">إِجَابَةٌ مُمْتَازَةٌ وَصَحِيحَةٌ!</strong>
+                      <strong className="text-sm font-black text-emerald-900">
+                        {language === 'en' ? 'Excellent! Correct Answer!' : 'إِجَابَةٌ مُمْتَازَةٌ وَصَحِيحَةٌ!'}
+                      </strong>
                     </>
                   ) : (
                     <>
                       <HelpCircle className="w-5 h-5 text-amber-600" />
-                      <strong className="text-sm font-black text-amber-900">الشَّرْحُ وَالتَّوْضِيحُ الْهَنْدَسِيُّ:</strong>
+                      <strong className="text-sm font-black text-amber-900">
+                        {language === 'en' ? 'Geometric Explanation:' : 'الشَّرْحُ وَالتَّوْضِيحُ الْهَنْدَسِيُّ:'}
+                      </strong>
                     </>
                   )}
                 </div>
-                <p className="text-xs sm:text-sm font-medium leading-relaxed text-slate-800">
-                  {currentItem.explanation}
-                </p>
+                {language !== 'en' && (
+                  <p className="text-xs sm:text-sm font-medium leading-relaxed text-slate-800">
+                    {currentItem.explanation}
+                  </p>
+                )}
+                {(language === 'en' || language === 'bilingual') && currentItem.explanationEn && (
+                  <p className={`text-xs sm:text-sm font-medium leading-relaxed text-slate-800 ${language === 'bilingual' ? 'pt-2 border-t border-amber-200/80 text-blue-950' : ''}`}>
+                    {language === 'bilingual' && <strong className="text-blue-800">🇺🇸 English: </strong>}
+                    {currentItem.explanationEn}
+                  </p>
+                )}
 
                 <button
                   type="button"
